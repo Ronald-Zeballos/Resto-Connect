@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: resto-connect-db
+    environment:
+      POSTGRES_USER: resto_user
+      POSTGRES_PASSWORD: resto_password
+      POSTGRES_DB: resto_connect
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U resto_user"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - resto-network
+
+  # Backend Application
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: resto-connect-backend
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+      DATABASE_URL: postgresql://resto_user:resto_password@postgres:5432/resto_connect
+      JWT_SECRET: dev-secret-change-in-production
+      LOG_LEVEL: info
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend/src:/app/src
+    networks:
+      - resto-network
+    command: npm run dev
+
+  # Frontend Application (opcional - mejor servir por separado en desarrollo)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: resto-connect-frontend
+    ports:
+      - "3001:3001"
+    environment:
+      VITE_API_URL: http://localhost:3000/api
+    volumes:
+      - ./frontend/src:/app/src
+    networks:
+      - resto-network
+    command: npm run dev
+
+volumes:
+  postgres_data:
+
+networks:
+  resto-network:
+    driver: bridge
