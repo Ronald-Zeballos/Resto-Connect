@@ -1,0 +1,717 @@
+Quiero que analices y refactorices/generes mi backend siguiendo una arquitectura por paquetes orientada a casos de uso, no por carpetas técnicas genéricas.
+
+Contexto:
+Tengo un sistema llamado RestoConnect Pro para restaurantes. Actualmente la estructura está muy parecida a un backend .NET organizado por módulos como:
+- Almacen
+  - GestionAlmacenes
+  - Inventario
+  - SalidasStock
+- Compras
+  - Catalogo
+  - EspecificacionesCompra
+  - Proveedores
+- Financiero
+  - FlujoCaja
+  - PRC
+  - Presupuesto
+  - TIR
+- Infraestructura
+- Interfaces
+- Migraciones
+- Proyectos
+
+Pero me indicaron que la arquitectura debe estar organizada “por paquetes tipo cada caso de uso debe tener su propio paquete para tener esa funcionalidad”. Es decir, no quiero una estructura donde todos los controllers estén juntos, todos los services juntos y todos los DTOs juntos. Quiero que cada funcionalidad tenga su propio paquete autocontenido.
+
+Tecnología objetivo:
+Usar Java 21 con Spring Boot 3.
+Usar Maven.
+Usar PostgreSQL.
+Usar Spring Data JPA.
+Usar Bean Validation.
+Usar Lombok si ayuda a reducir código.
+Usar MapStruct si es necesario para mapear entidades a DTOs.
+Usar Spring Security con JWT básico para roles ADMIN, MESERO, COCINA y CLIENTE_QR.
+Usar Flyway o Liquibase para migraciones.
+Usar WebSocket o Server-Sent Events para notificaciones en tiempo real.
+Preparar el código para poder correr con Docker Compose: backend + PostgreSQL.
+
+Objetivo principal:
+Reestructurar el proyecto para que cada caso de uso tenga su propio paquete con:
+- Controller
+- Service o UseCase
+- DTOs
+- Entidades relacionadas si aplica
+- Repository
+- Validaciones
+- Eventos
+- Tests básicos
+
+No quiero una arquitectura superficial. Quiero que la lógica de negocio sea real y mejorada, especialmente en inventario, compras, predicción de reposición con IA/reglas inteligentes y notificaciones.
+
+Nombre del proyecto:
+restoconnect-api
+
+Estructura esperada:
+src/main/java/com/restoconnect/api
+
+Crear paquetes por funcionalidad/caso de uso, por ejemplo:
+
+com.restoconnect.api
+│
+├── shared
+│   ├── domain
+│   │   ├── BaseEntity.java
+│   │   ├── EstadoRegistro.java
+│   │   └── MoneyUtils.java
+│   ├── exception
+│   │   ├── BusinessException.java
+│   │   ├── NotFoundException.java
+│   │   └── GlobalExceptionHandler.java
+│   ├── security
+│   │   ├── JwtService.java
+│   │   ├── SecurityConfig.java
+│   │   └── UserPrincipal.java
+│   ├── notification
+│   │   ├── NotificationEvent.java
+│   │   ├── NotificationService.java
+│   │   └── NotificationController.java
+│   └── config
+│       ├── AppConfig.java
+│       └── CorsConfig.java
+│
+├── auth
+│   ├── AuthController.java
+│   ├── AuthService.java
+│   ├── LoginRequest.java
+│   ├── LoginResponse.java
+│   └── Usuario.java
+│
+├── mesa
+│   ├── Mesa.java
+│   ├── EstadoMesa.java
+│   ├── MesaRepository.java
+│   ├── MesaService.java
+│   ├── MesaController.java
+│   ├── dto
+│   │   ├── CrearMesaRequest.java
+│   │   ├── MesaResponse.java
+│   │   └── CambiarEstadoMesaRequest.java
+│   └── qr
+│       ├── GenerarQrMesaUseCase.java
+│       └── QrMesaResponse.java
+│
+├── menu
+│   ├── categoria
+│   │   ├── CategoriaProducto.java
+│   │   ├── CategoriaProductoRepository.java
+│   │   ├── CategoriaProductoService.java
+│   │   ├── CategoriaProductoController.java
+│   │   └── dto
+│   └── producto
+│       ├── Producto.java
+│       ├── ProductoRepository.java
+│       ├── ProductoService.java
+│       ├── ProductoController.java
+│       └── dto
+│
+├── pedido
+│   ├── Pedido.java
+│   ├── PedidoDetalle.java
+│   ├── EstadoPedido.java
+│   ├── PedidoRepository.java
+│   ├── PedidoController.java
+│   ├── crear
+│   │   ├── CrearPedidoUseCase.java
+│   │   ├── CrearPedidoRequest.java
+│   │   └── CrearPedidoResponse.java
+│   ├── validar
+│   │   ├── ValidarPedidoUseCase.java
+│   │   └── ValidarPedidoRequest.java
+│   ├── estado
+│   │   ├── ConsultarEstadoPedidoUseCase.java
+│   │   └── EstadoPedidoResponse.java
+│   └── cancelar
+│       ├── CancelarPedidoUseCase.java
+│       └── CancelarPedidoRequest.java
+│
+├── pago
+│   ├── Pago.java
+│   ├── MetodoPago.java
+│   ├── EstadoPago.java
+│   ├── PagoRepository.java
+│   ├── PagoController.java
+│   ├── efectivo
+│   │   ├── RegistrarPagoEfectivoUseCase.java
+│   │   └── RegistrarPagoEfectivoRequest.java
+│   └── pasarela
+│       ├── ProcesarPagoPasarelaUseCase.java
+│       ├── PasarelaPagoClient.java
+│       └── ConfirmacionPagoRequest.java
+│
+├── facturacion
+│   ├── Factura.java
+│   ├── FacturaRepository.java
+│   ├── FacturacionController.java
+│   ├── GenerarFacturaUseCase.java
+│   ├── DatosFacturacionRequest.java
+│   └── FacturaResponse.java
+│
+├── inventario
+│   ├── item
+│   │   ├── ItemInventario.java
+│   │   ├── UnidadMedida.java
+│   │   ├── ItemInventarioRepository.java
+│   │   ├── ItemInventarioController.java
+│   │   ├── CrearItemInventarioUseCase.java
+│   │   ├── ActualizarItemInventarioUseCase.java
+│   │   └── dto
+│   ├── movimiento
+│   │   ├── MovimientoInventario.java
+│   │   ├── TipoMovimientoInventario.java
+│   │   ├── MovimientoInventarioRepository.java
+│   │   ├── RegistrarEntradaInventarioUseCase.java
+│   │   ├── RegistrarSalidaInventarioUseCase.java
+│   │   └── MovimientoInventarioController.java
+│   ├── stock
+│   │   ├── ConsultarStockUseCase.java
+│   │   ├── AjustarStockUseCase.java
+│   │   ├── StockResponse.java
+│   │   └── StockController.java
+│   ├── parametros
+│   │   ├── ParametroInventario.java
+│   │   ├── ParametroInventarioRepository.java
+│   │   ├── ConfigurarParametrosInventarioUseCase.java
+│   │   └── ParametrosInventarioController.java
+│   ├── prediccion
+│   │   ├── PrediccionReposicion.java
+│   │   ├── PrediccionReposicionRepository.java
+│   │   ├── GenerarPrediccionReposicionUseCase.java
+│   │   ├── MotorPrediccionInventario.java
+│   │   ├── MotorPrediccionReglas.java
+│   │   ├── MotorPrediccionIA.java
+│   │   ├── PrediccionReposicionResponse.java
+│   │   └── PrediccionInventarioController.java
+│   └── alerta
+│       ├── AlertaInventario.java
+│       ├── TipoAlertaInventario.java
+│       ├── AlertaInventarioRepository.java
+│       ├── GenerarAlertasInventarioUseCase.java
+│       ├── MarcarAlertaAtendidaUseCase.java
+│       └── AlertasInventarioController.java
+│
+├── compras
+│   ├── proveedor
+│   ├── ordencompra
+│   ├── especificacion
+│   └── recepcion
+│
+├── caja
+│   ├── flujo
+│   ├── apertura
+│   ├── cierre
+│   └── reporte
+│
+├── reportes
+│   ├── ventas
+│   ├── productos
+│   ├── meseros
+│   └── inventario
+│
+└── configuracion
+    ├── restaurante
+    ├── parametros
+    └── impuestos
+
+Regla importante:
+Cada paquete debe representar una funcionalidad clara del negocio. Por ejemplo, inventario.prediccion debe contener todo lo necesario para predecir reposición, no debe depender de controllers o DTOs externos innecesarios.
+
+Funcionalidades base que debe tener el sistema:
+1. Acceso por QR de mesa.
+2. Visualización del menú.
+3. Gestión de carrito/pedido.
+4. Registro de datos de facturación.
+5. Selección de método de pago.
+6. Pago por pasarela electrónica simulado.
+7. Pago en efectivo validado por mesero.
+8. Consulta de estado del pedido.
+9. Panel de mesero con mapa de mesas.
+10. Validación de pedido por mesero.
+11. Registro de pago en efectivo.
+12. Gestión de estado de mesa.
+13. Pedidos pendientes.
+14. Gestión de incidencias.
+15. Gestión de categorías.
+16. Gestión de productos.
+17. Gestión de personal.
+18. Reportes de ventas.
+19. Histórico de transacciones.
+20. Configuración de parámetros.
+21. Generación de factura electrónica.
+22. Control avanzado de inventario.
+23. Predicción inteligente de reposición.
+24. Notificaciones automáticas.
+
+Mejorar especialmente el módulo de inventario:
+No quiero un inventario básico donde solo se suma y resta stock. Quiero un inventario más parametrizable e inteligente.
+
+El módulo de inventario debe manejar:
+- Ítems de inventario.
+- Stock actual.
+- Stock mínimo.
+- Stock máximo.
+- Punto de reorden.
+- Tiempo promedio de entrega del proveedor en días.
+- Consumo promedio diario.
+- Consumo histórico.
+- Unidad de medida: unidad, kg, litro, gramo, caja, paquete.
+- Costo unitario.
+- Proveedor preferido.
+- Fecha de última compra.
+- Fecha estimada de agotamiento.
+- Clasificación ABC: alta, media o baja rotación.
+- Estado: disponible, bajo stock, crítico, agotado, sobrestock.
+- Relación opcional entre producto del menú e insumos de inventario.
+
+Ejemplo:
+Producto del menú: Hamburguesa simple.
+Insumos:
+- 1 pan
+- 1 carne
+- 20 gramos de lechuga
+- 1 lámina de queso
+
+Cuando se vende una hamburguesa, el sistema debe descontar automáticamente esos insumos del inventario.
+
+Lógica de negocio requerida para inventario:
+1. Al crear un pedido confirmado, descontar automáticamente los insumos relacionados a cada producto.
+2. Si el stock llega a cero, marcar el producto del menú como no disponible.
+3. Si el stock baja del mínimo, generar alerta.
+4. Si el stock baja del punto de reorden, sugerir compra.
+5. Si hay sobrestock, generar advertencia.
+6. Si el consumo diario aumenta, ajustar la predicción.
+7. Si un proveedor demora más días, aumentar cantidad sugerida.
+8. Si hay historial insuficiente, usar reglas simples.
+9. Si hay historial suficiente, usar predicción basada en promedio móvil.
+10. Dejar preparado un adaptador para IA externa, pero implementar primero un motor local de reglas y promedio móvil.
+
+Predicción de reposición:
+Crear un paquete inventario.prediccion con un motor de predicción.
+
+Debe calcular:
+- consumoPromedioDiario
+- diasHastaAgotamiento
+- fechaEstimadaAgotamiento
+- cantidadSugeridaCompra
+- nivelRiesgo: BAJO, MEDIO, ALTO, CRITICO
+- motivo de la recomendación
+- confianza de la predicción en porcentaje
+
+Fórmula sugerida:
+consumoPromedioDiario = promedio de salidas de inventario de los últimos N días.
+diasHastaAgotamiento = stockActual / consumoPromedioDiario.
+cantidadSugeridaCompra = consumoPromedioDiario * (diasEntregaProveedor + diasCoberturaDeseada) - stockActual.
+Si cantidadSugeridaCompra < 0, devolver 0.
+
+Parámetros configurables:
+Crear un paquete inventario.parametros.
+
+Debe permitir configurar:
+- diasAnalisisConsumo: por defecto 30.
+- diasCoberturaDeseada: por defecto 7.
+- porcentajeMargenSeguridad: por defecto 15%.
+- activarPrediccionAutomatica: true/false.
+- activarAlertasEmail: true/false.
+- activarAlertasWebSocket: true/false.
+- horaEjecucionPrediccionDiaria.
+- stockMinimoGlobalOpcional.
+- metodoPrediccion: REGLAS, PROMEDIO_MOVIL, IA_SIMULADA.
+
+La predicción debe poder ejecutarse:
+- Manualmente desde endpoint REST.
+- Automáticamente con un Scheduler diario.
+- Al registrar una salida fuerte de inventario.
+- Al confirmar pedidos.
+
+Notificaciones:
+Crear un sistema de notificaciones para:
+- Stock bajo.
+- Stock crítico.
+- Producto agotado.
+- Reposición sugerida.
+- Compra recomendada.
+- Pedido pendiente de validación.
+- Pago en efectivo pendiente.
+- Factura generada.
+- Incidencia registrada.
+
+Usar WebSocket o Server-Sent Events para enviar notificaciones en tiempo real al panel ADMIN, MESERO o COCINA.
+También crear una tabla de notificaciones persistidas con:
+- id
+- tipo
+- titulo
+- mensaje
+- severidad
+- rolDestino
+- leida
+- fechaCreacion
+- entidadRelacionada
+- entidadId
+
+Compras:
+Mejorar el módulo de compras para que se integre con inventario:
+- Gestión de proveedores.
+- Especificaciones de compra.
+- Órdenes de compra.
+- Recepción de compra.
+- Al recibir una compra, aumentar stock automáticamente.
+- Permitir generar orden de compra sugerida desde una predicción de inventario.
+- La orden debe contener proveedor, ítems, cantidades sugeridas, costo estimado y estado.
+
+Estados de orden de compra:
+- BORRADOR
+- SUGERIDA
+- APROBADA
+- ENVIADA
+- RECIBIDA
+- CANCELADA
+
+Reportes:
+Crear reportes útiles:
+1. Ventas por rango de fecha.
+2. Productos más vendidos.
+3. Ventas por mesero.
+4. Ventas por método de pago.
+5. Stock bajo.
+6. Productos agotados.
+7. Predicciones de reposición.
+8. Consumo de inventario por período.
+9. Compras sugeridas.
+10. Comparación de consumo real vs consumo predicho.
+
+API REST esperada:
+Crear endpoints claros. Ejemplos:
+
+Auth:
+POST /api/auth/login
+
+Mesas:
+POST /api/mesas
+GET /api/mesas
+PATCH /api/mesas/{id}/estado
+GET /api/mesas/{id}/qr
+
+Menú:
+GET /api/menu/categorias
+POST /api/menu/categorias
+GET /api/menu/productos
+POST /api/menu/productos
+PATCH /api/menu/productos/{id}/activar
+PATCH /api/menu/productos/{id}/desactivar
+
+Pedidos:
+POST /api/pedidos
+GET /api/pedidos/{id}
+GET /api/pedidos/mesa/{mesaId}/activo
+PATCH /api/pedidos/{id}/validar
+PATCH /api/pedidos/{id}/estado
+PATCH /api/pedidos/{id}/cancelar
+
+Pagos:
+POST /api/pagos/efectivo
+POST /api/pagos/pasarela/simular
+GET /api/pagos/pediente-efectivo
+
+Facturación:
+POST /api/facturas/generar/{pedidoId}
+GET /api/facturas/{id}
+
+Inventario:
+POST /api/inventario/items
+GET /api/inventario/items
+GET /api/inventario/items/{id}
+PATCH /api/inventario/items/{id}
+POST /api/inventario/movimientos/entrada
+POST /api/inventario/movimientos/salida
+GET /api/inventario/stock
+GET /api/inventario/stock/bajo
+GET /api/inventario/stock/critico
+GET /api/inventario/stock/agotado
+
+Parámetros de inventario:
+GET /api/inventario/parametros
+PUT /api/inventario/parametros
+
+Predicción:
+POST /api/inventario/prediccion/generar
+GET /api/inventario/prediccion
+GET /api/inventario/prediccion/item/{itemId}
+POST /api/inventario/prediccion/{id}/generar-orden-compra
+
+Alertas:
+GET /api/inventario/alertas
+PATCH /api/inventario/alertas/{id}/atendida
+
+Compras:
+POST /api/compras/proveedores
+GET /api/compras/proveedores
+POST /api/compras/ordenes
+GET /api/compras/ordenes
+PATCH /api/compras/ordenes/{id}/aprobar
+PATCH /api/compras/ordenes/{id}/recibir
+
+Notificaciones:
+GET /api/notificaciones
+PATCH /api/notificaciones/{id}/leer
+GET /api/notificaciones/stream o /ws/notificaciones
+
+Modelo de datos mínimo:
+Crear entidades JPA con relaciones correctas:
+
+Usuario:
+- id
+- nombre
+- username
+- passwordHash
+- rol
+- activo
+
+Mesa:
+- id
+- numero
+- codigoQr
+- estado
+
+CategoriaProducto:
+- id
+- nombre
+- descripcion
+- activo
+
+Producto:
+- id
+- nombre
+- descripcion
+- precio
+- categoria
+- activo
+- disponible
+- imagenUrl
+
+RecetaProducto:
+- id
+- producto
+- itemInventario
+- cantidadNecesaria
+
+Pedido:
+- id
+- mesa
+- estado
+- metodoPago
+- total
+- fechaCreacion
+- meseroValidador
+
+PedidoDetalle:
+- id
+- pedido
+- producto
+- cantidad
+- precioUnitario
+- subtotal
+
+Pago:
+- id
+- pedido
+- metodo
+- estado
+- monto
+- fechaPago
+- referenciaTransaccion
+
+Factura:
+- id
+- pedido
+- numeroFactura
+- razonSocial
+- nitCi
+- email
+- total
+- fechaEmision
+
+ItemInventario:
+- id
+- nombre
+- descripcion
+- unidadMedida
+- stockActual
+- stockMinimo
+- stockMaximo
+- puntoReorden
+- costoUnitario
+- proveedorPreferido
+- tiempoEntregaProveedorDias
+- activo
+
+MovimientoInventario:
+- id
+- itemInventario
+- tipoMovimiento
+- cantidad
+- motivo
+- referencia
+- fechaMovimiento
+
+ParametroInventario:
+- id
+- diasAnalisisConsumo
+- diasCoberturaDeseada
+- porcentajeMargenSeguridad
+- activarPrediccionAutomatica
+- activarAlertasEmail
+- activarAlertasWebSocket
+- horaEjecucionPrediccionDiaria
+- metodoPrediccion
+
+PrediccionReposicion:
+- id
+- itemInventario
+- consumoPromedioDiario
+- diasHastaAgotamiento
+- fechaEstimadaAgotamiento
+- cantidadSugeridaCompra
+- nivelRiesgo
+- confianza
+- motivo
+- fechaGeneracion
+
+AlertaInventario:
+- id
+- itemInventario
+- tipo
+- severidad
+- mensaje
+- atendida
+- fechaCreacion
+
+Proveedor:
+- id
+- nombre
+- nit
+- telefono
+- email
+- direccion
+- activo
+
+OrdenCompra:
+- id
+- proveedor
+- estado
+- costoEstimado
+- fechaCreacion
+- fechaRecepcion
+
+OrdenCompraDetalle:
+- id
+- ordenCompra
+- itemInventario
+- cantidad
+- costoUnitario
+- subtotal
+
+Notificacion:
+- id
+- tipo
+- titulo
+- mensaje
+- severidad
+- rolDestino
+- leida
+- entidadRelacionada
+- entidadId
+- fechaCreacion
+
+Reglas importantes de negocio:
+- No permitir crear pedido si una mesa está inactiva o bloqueada.
+- No permitir confirmar pedido si no hay stock suficiente de los insumos.
+- Al confirmar pedido, descontar inventario mediante movimientos de salida.
+- Si falla el descuento de inventario, no se debe confirmar el pedido.
+- Usar transacciones con @Transactional.
+- No permitir stock negativo.
+- No permitir eliminar categorías con productos activos.
+- No permitir eliminar proveedor con órdenes activas.
+- El pago electrónico puede estar simulado, pero debe tener estructura preparada para integrar una pasarela real.
+- La factura se genera solo si el pedido está pagado.
+- En efectivo, el pedido puede quedar pendiente de pago hasta que el mesero confirme.
+- Las notificaciones deben generarse como eventos de dominio o llamadas desde los casos de uso.
+- Mantener separación entre lógica de negocio y controlador.
+
+Arquitectura deseada:
+Usar una variante simple de Clean Architecture / Hexagonal, pero sin sobrecomplicarla.
+Cada caso de uso debe tener su clase específica.
+Ejemplo:
+- CrearPedidoUseCase
+- ValidarPedidoUseCase
+- RegistrarPagoEfectivoUseCase
+- GenerarFacturaUseCase
+- RegistrarSalidaInventarioUseCase
+- GenerarPrediccionReposicionUseCase
+- GenerarOrdenCompraDesdePrediccionUseCase
+
+Evitar:
+- Services gigantes con 20 métodos sin separación.
+- Controllers con lógica de negocio.
+- DTOs compartidos para todo.
+- Paquetes genéricos tipo controllers, services, dtos en la raíz.
+- Código quemado/hardcoded para parámetros de inventario.
+- Stock manejado como simple campo sin movimientos históricos.
+
+Base de datos:
+Crear migraciones iniciales para las tablas principales.
+Agregar datos seed de ejemplo:
+- 5 mesas.
+- 4 categorías.
+- 10 productos.
+- 10 ítems de inventario.
+- recetas de productos relacionadas con inventario.
+- 2 proveedores.
+- 1 usuario admin.
+- 1 usuario mesero.
+- parámetros de inventario por defecto.
+
+Tests:
+Crear tests unitarios básicos para:
+1. Crear pedido descuenta inventario correctamente.
+2. No permite pedido si no hay stock suficiente.
+3. Genera alerta cuando stock baja del mínimo.
+4. Calcula predicción de reposición con promedio móvil.
+5. Genera orden de compra sugerida desde una predicción.
+6. Registrar pago en efectivo cambia pedido a pagado y genera factura.
+
+Documentación:
+Agregar README.md con:
+- Descripción del sistema.
+- Arquitectura por paquetes/casos de uso.
+- Cómo correr con Docker Compose.
+- Endpoints principales.
+- Roles del sistema.
+- Explicación de la predicción de inventario.
+- Ejemplos de JSON para crear pedido, registrar entrada de inventario y generar predicción.
+
+Criterios de aceptación:
+1. El proyecto debe compilar.
+2. Debe correr con Spring Boot.
+3. Debe levantar PostgreSQL con Docker Compose.
+4. Debe tener Swagger/OpenAPI habilitado.
+5. La estructura debe estar organizada por caso de uso.
+6. El inventario debe tener lógica real de entradas, salidas, alertas y predicción.
+7. Las predicciones deben usar parámetros configurables.
+8. Las notificaciones deben persistirse y poder enviarse en tiempo real.
+9. Los endpoints deben devolver respuestas claras.
+10. No dejar métodos vacíos ni TODOs importantes.
+11. No crear botones ni endpoints sin funcionamiento real.
+12. Usar nombres en español para el dominio del negocio y nombres claros en el código.
+
+Primero analiza la estructura actual y luego genera/refactoriza el proyecto aplicando esta arquitectura. Si ya existen clases parecidas, reutilízalas pero reorganízalas. Si no existen, créalas. Prioriza que el sistema quede funcional, coherente y preparado para crecer.
+Mantén Java + Spring Boot. No migrar a JavaScript. Quiero una arquitectura fuerte tipo backend empresarial, parecida a lo que ya tenía en C# pero mejor organizada por paquetes de casos de uso.
+Divide esto en sprints que veas necesarios para concluir todo dejando el tema de base de datos para los ultimos y vas a documentar todo en archivos md cada sprint, asi mismo cada cambio o fixes dentro de esos sprint documentados 

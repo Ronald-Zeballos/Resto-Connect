@@ -1,0 +1,37 @@
+spring:
+  application:
+    name: restoconnect-api
+  datasource:
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/restoconnect}
+    username: ${SPRING_DATASOURCE_USERNAME:restoconnect}
+    password: ${SPRING_DATASOURCE_PASSWORD:restoconnect}
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    open-in-view: false
+    properties:
+      hibernate:
+        format_sql: true
+        jdbc:
+          time_zone: UTC
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+  jackson:
+    default-property-inclusion: non_null
+
+server:
+  error:
+    include-message: always
+
+app:
+  jwt:
+    secret: ${APP_JWT_SECRET:cambio-esta-clave-en-desarrollo-cambio-esta-clave}
+    expiration-minutes: ${APP_JWT_EXPIRATION_MINUTES:480}
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+

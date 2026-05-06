@@ -1,68 +1,32 @@
-version: '3.8'
-
 services:
-  # PostgreSQL Database
   postgres:
-    image: postgres:15-alpine
-    container_name: resto-connect-db
+    image: postgres:16
+    container_name: restoconnect-postgres
     environment:
-      POSTGRES_USER: resto_user
-      POSTGRES_PASSWORD: resto_password
-      POSTGRES_DB: resto_connect
+      POSTGRES_DB: restoconnect
+      POSTGRES_USER: restoconnect
+      POSTGRES_PASSWORD: restoconnect
     ports:
       - "5432:5432"
     volumes:
-      - postgres_data:/var/lib/postgresql/data
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U resto_user"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - resto-network
+      - postgres-data:/var/lib/postgresql/data
 
-  # Backend Application
   backend:
     build:
-      context: ./backend
+      context: .
       dockerfile: Dockerfile
-    container_name: resto-connect-backend
-    environment:
-      NODE_ENV: development
-      PORT: 3000
-      DATABASE_URL: postgresql://resto_user:resto_password@postgres:5432/resto_connect
-      JWT_SECRET: dev-secret-change-in-production
-      LOG_LEVEL: info
-    ports:
-      - "3000:3000"
+    container_name: restoconnect-api
     depends_on:
-      postgres:
-        condition: service_healthy
-    volumes:
-      - ./backend/src:/app/src
-    networks:
-      - resto-network
-    command: npm run dev
-
-  # Frontend Application (opcional - mejor servir por separado en desarrollo)
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: resto-connect-frontend
-    ports:
-      - "3001:3001"
+      - postgres
     environment:
-      VITE_API_URL: http://localhost:3000/api
-    volumes:
-      - ./frontend/src:/app/src
-    networks:
-      - resto-network
-    command: npm run dev
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/restoconnect
+      SPRING_DATASOURCE_USERNAME: restoconnect
+      SPRING_DATASOURCE_PASSWORD: restoconnect
+      APP_JWT_SECRET: cambio-esta-clave-en-produccion-cambio-esta-clave
+      APP_JWT_EXPIRATION_MINUTES: 480
+    ports:
+      - "8080:8080"
 
 volumes:
-  postgres_data:
+  postgres-data:
 
-networks:
-  resto-network:
-    driver: bridge

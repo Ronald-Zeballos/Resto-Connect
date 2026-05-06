@@ -1,0 +1,14 @@
+package com.restoconnect.api.shared.notification;
+
+public enum TipoNotificacion {
+    STOCK_BAJO,
+    STOCK_CRITICO,
+    PRODUCTO_AGOTADO,
+    REPOSICION_SUGERIDA,
+    COMPRA_RECOMENDADA,
+    PEDIDO_PENDIENTE_VALIDACION,
+    PAGO_EFECTIVO_PENDIENTE,
+    FACTURA_GENERADA,
+    INCIDENCIA_REGISTRADA
+}
+
