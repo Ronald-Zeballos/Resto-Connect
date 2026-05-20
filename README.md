@@ -71,7 +71,7 @@ docker compose up --build
 
 Servicios:
 
-- Frontend: `http://localhost:4173`
+- Interfaz: `http://localhost:4173`
 - API: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui.html`
 - PostgreSQL: `localhost:5432`
@@ -102,7 +102,7 @@ cp .env.example .env
 
 ## Activar pagos QR reales con `pagui`
 
-El stack base deja RestoConnect listo con PostgreSQL, Redis, API y frontend. Para levantar tambien el proveedor QR externo `pagui`, usa la capa adicional:
+El stack base deja RestoConnect listo con PostgreSQL, Redis, API e interfaz. Para levantar tambien el proveedor QR externo `pagui`, usa la capa adicional:
 
 ```bash
 docker compose -f docker-compose.yml -f docker-compose.payments.yml up --build

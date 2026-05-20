@@ -1,6 +1,6 @@
-# Prompt para Skill Frontend - RestoConnect Pro
+# Prompt para Skill Interfaz - RestoConnect Pro
 
-Actua como una skill senior de frontend, diseño UI/UX y consumo de APIs. Debes crear un frontend completo, moderno y visualmente atractivo para el proyecto `RestoConnect Pro`, conectado al backend existente en Spring Boot.
+Actua como una skill senior de interfaz, diseño UI/UX y consumo de APIs. Debes crear un modulo de interfaz completo, moderno y visualmente atractivo para el proyecto `RestoConnect Pro`, conectado al backend existente en Spring Boot.
 
 ## Contexto del proyecto
 
@@ -19,9 +19,9 @@ El sistema es una plataforma operativa para restaurantes. Debe sentirse como un 
 
 ## Objetivo
 
-Genera una aplicacion frontend completa y hermosa para `RestoConnect Pro`, con datos visuales ya cargados, imagenes reales o assets generados, navegacion funcional, estados de carga, estados vacios, errores, autenticacion y pantallas listas para conectar al backend.
+Genera una aplicacion de interfaz completa y hermosa para `RestoConnect Pro`, con datos visuales ya cargados, imagenes reales o assets generados, navegacion funcional, estados de carga, estados vacios, errores, autenticacion y pantallas listas para conectar al backend.
 
-Si no existe frontend en el repo, crea uno nuevo en una carpeta `frontend`.
+Si no existe la interfaz en el repo, crea un nuevo modulo en una carpeta `interfaz`.
 
 ## Stack recomendado
 
@@ -58,9 +58,9 @@ Debe sentirse como una herramienta diaria para un restaurante ocupado, no como u
 
 ## Assets e imagenes obligatorias
 
-Incluye imagenes ya cargadas en el proyecto frontend, preferiblemente en:
+Incluye imagenes ya cargadas en el proyecto de interfaz, preferiblemente en:
 
-`frontend/public/images`
+`interfaz/public/images`
 
 Crea o descarga/genera assets para:
 
@@ -396,8 +396,8 @@ Nada debe solaparse. Los textos deben caber en botones, badges, tablas y tarjeta
 
 ## Entregables
 
-1. Crear el frontend completo en `frontend`.
-2. Incluir README del frontend con:
+1. Crear el modulo de interfaz completo en `interfaz`.
+2. Incluir README de la interfaz con:
    - instalacion
    - variables env
    - comandos

@@ -22,5 +22,4 @@ Completar el frente operativo y analitico del restaurante.
 
 - Endpoints analiticos funcionales.
 - Casos de uso trazables y sin servicios monoliticos.
-- Respuestas REST listas para frontend administrativo.
-
+- Respuestas REST listas para la interfaz administrativa.

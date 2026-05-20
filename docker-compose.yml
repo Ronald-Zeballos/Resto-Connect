@@ -70,14 +70,14 @@ services:
       - "${BACKEND_HOST_PORT:-8080}:8080"
     restart: unless-stopped
 
-  frontend:
+  interfaz:
     build:
-      context: ./frontend
+      context: ./interfaz
       dockerfile: Dockerfile
       args:
         VITE_API_URL: ${VITE_API_URL:-http://localhost:${BACKEND_HOST_PORT:-8080}}
         VITE_PURCHASES_WHATSAPP_NUMBER: ${VITE_PURCHASES_WHATSAPP_NUMBER:-59165900645}
-    container_name: restoconnect-frontend
+    container_name: restoconnect-interfaz
     depends_on:
       backend:
         condition: service_started

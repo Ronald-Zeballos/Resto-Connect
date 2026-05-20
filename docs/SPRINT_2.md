@@ -43,7 +43,7 @@ Se extendio la base del backend con modulos operativos y de analitica para cubri
 - Gestion mas profunda de personal: edicion de perfil, reasignacion, permisos finos.
 - Reportes con paginacion, exportacion y filtros mas avanzados.
 - Incidencias con asignacion responsable, bitacora y SLA.
-- Dashboard consolidado para frontend administrativo.
+- Dashboard consolidado para la interfaz administrativa.
 
 ## Riesgos abiertos
 
