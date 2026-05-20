@@ -60,6 +60,24 @@ public class ProductoService {
     }
 
     @Transactional
+    public ProductoResponse actualizar(UUID id, ActualizarProductoRequest request) {
+        Producto producto = productoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Producto no encontrado."));
+        CategoriaProducto categoria = categoriaProductoRepository.findById(request.categoriaId())
+                .orElseThrow(() -> new NotFoundException("Categoria no encontrada."));
+
+        producto.setNombre(request.nombre());
+        producto.setDescripcion(request.descripcion());
+        producto.setPrecio(MoneyUtils.scale(request.precio()));
+        producto.setCategoria(categoria);
+        producto.setImagenUrl(request.imagenUrl());
+        producto.setActivo(request.activo());
+        productoRepository.save(producto);
+        productoDisponibilidadService.recalcularDisponibilidadProducto(producto);
+        return map(productoRepository.findById(producto.getId()).orElseThrow());
+    }
+
+    @Transactional
     public ProductoResponse activar(UUID id) {
         Producto producto = productoRepository.findById(id).orElseThrow(() -> new NotFoundException("Producto no encontrado."));
         producto.setActivo(true);
@@ -114,4 +132,3 @@ public class ProductoService {
     ) {
     }
 }
-

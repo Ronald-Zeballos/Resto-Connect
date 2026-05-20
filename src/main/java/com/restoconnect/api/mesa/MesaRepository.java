@@ -10,5 +10,6 @@ public interface MesaRepository extends JpaRepository<Mesa, UUID> {
     List<Mesa> findAllByOrderByNumeroAsc();
 
     Optional<Mesa> findByNumero(Integer numero);
-}
 
+    Optional<Mesa> findByCodigoQr(String codigoQr);
+}

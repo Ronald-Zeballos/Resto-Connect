@@ -32,6 +32,15 @@ public class ProductoController {
         return ResponseEntity.ok(productoService.crear(request));
     }
 
+    @PatchMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<ProductoResponse> actualizar(
+            @PathVariable UUID id,
+            @Valid @RequestBody ActualizarProductoRequest request
+    ) {
+        return ResponseEntity.ok(productoService.actualizar(id, request));
+    }
+
     @PatchMapping("/{id}/activar")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<ProductoResponse> activar(@PathVariable UUID id) {

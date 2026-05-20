@@ -19,5 +19,9 @@ public class AuthController {
     public ResponseEntity<LoginResponse> login(@Valid @RequestBody LoginRequest request) {
         return ResponseEntity.ok(authService.login(request));
     }
-}
 
+    @PostMapping("/cliente-qr/{codigoQr}")
+    public ResponseEntity<LoginResponse> loginClienteQr(@org.springframework.web.bind.annotation.PathVariable String codigoQr) {
+        return ResponseEntity.ok(authService.loginClienteQr(codigoQr));
+    }
+}

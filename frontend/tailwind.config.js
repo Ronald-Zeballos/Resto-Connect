@@ -9,6 +9,7 @@ export default {
         tomato: "#c7442f",
         maize: "#e3a62f",
         cream: "#f8f5ef",
+        oatmeal: "#f5f0e6",
         mist: "#ece8df"
       },
       boxShadow: {

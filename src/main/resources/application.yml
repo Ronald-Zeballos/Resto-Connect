@@ -5,6 +5,14 @@ spring:
     url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/restoconnect}
     username: ${SPRING_DATASOURCE_USERNAME:restoconnect}
     password: ${SPRING_DATASOURCE_PASSWORD:restoconnect}
+  data:
+    redis:
+      host: ${SPRING_DATA_REDIS_HOST:localhost}
+      port: ${SPRING_DATA_REDIS_PORT:6379}
+      password: ${SPRING_DATA_REDIS_PASSWORD:}
+      timeout: ${SPRING_DATA_REDIS_TIMEOUT:2s}
+      repositories:
+        enabled: false
   jpa:
     hibernate:
       ddl-auto: validate
@@ -28,10 +36,21 @@ app:
   jwt:
     secret: ${APP_JWT_SECRET:cambio-esta-clave-en-desarrollo-cambio-esta-clave}
     expiration-minutes: ${APP_JWT_EXPIRATION_MINUTES:480}
+  pagui:
+    enabled: ${APP_PAGUI_ENABLED:false}
+    base-url: ${APP_PAGUI_BASE_URL:http://localhost:3000}
+    email: ${APP_PAGUI_EMAIL:}
+    password: ${APP_PAGUI_PASSWORD:}
+    bank-id: ${APP_PAGUI_BANK_ID:1}
+    auth-cache-minutes: ${APP_PAGUI_AUTH_CACHE_MINUTES:30}
+    qr-cache-seconds: ${APP_PAGUI_QR_CACHE_SECONDS:120}
+  grok:
+    api-key: ${APP_GROK_API_KEY:}
+    model: ${APP_GROK_MODEL:grok-4.20-reasoning}
+    system-prompt: ${APP_GROK_SYSTEM_PROMPT:Eres un analista de operaciones para restaurantes. Resume hallazgos, riesgos y acciones concretas.}
 
 springdoc:
   swagger-ui:
     path: /swagger-ui.html
   api-docs:
     path: /api-docs
-

@@ -1,15 +1,40 @@
+name: restoconnect
+
 services:
   postgres:
-    image: postgres:16
+    image: postgres:16-alpine
     container_name: restoconnect-postgres
     environment:
-      POSTGRES_DB: restoconnect
-      POSTGRES_USER: restoconnect
-      POSTGRES_PASSWORD: restoconnect
+      POSTGRES_DB: ${POSTGRES_DB:-restoconnect}
+      POSTGRES_USER: ${POSTGRES_USER:-restoconnect}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-restoconnect}
     ports:
-      - "5432:5432"
+      - "${POSTGRES_HOST_PORT:-5432}:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 10s
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: restoconnect-redis
+    command: ["redis-server", "--appendonly", "yes"]
+    ports:
+      - "${REDIS_HOST_PORT:-6379}:6379"
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+      start_period: 5s
+    restart: unless-stopped
 
   backend:
     build:
@@ -17,16 +42,49 @@ services:
       dockerfile: Dockerfile
     container_name: restoconnect-api
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
     environment:
-      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/restoconnect
-      SPRING_DATASOURCE_USERNAME: restoconnect
-      SPRING_DATASOURCE_PASSWORD: restoconnect
-      APP_JWT_SECRET: cambio-esta-clave-en-produccion-cambio-esta-clave
-      APP_JWT_EXPIRATION_MINUTES: 480
+      SPRING_DATASOURCE_URL: ${SPRING_DATASOURCE_URL:-jdbc:postgresql://postgres:5432/restoconnect}
+      SPRING_DATASOURCE_USERNAME: ${SPRING_DATASOURCE_USERNAME:-restoconnect}
+      SPRING_DATASOURCE_PASSWORD: ${SPRING_DATASOURCE_PASSWORD:-restoconnect}
+      SPRING_DATA_REDIS_HOST: ${SPRING_DATA_REDIS_HOST:-redis}
+      SPRING_DATA_REDIS_PORT: ${SPRING_DATA_REDIS_PORT:-6379}
+      SPRING_DATA_REDIS_PASSWORD: ${SPRING_DATA_REDIS_PASSWORD:-}
+      SPRING_DATA_REDIS_TIMEOUT: ${SPRING_DATA_REDIS_TIMEOUT:-2s}
+      APP_JWT_SECRET: ${APP_JWT_SECRET:-cambio-esta-clave-en-produccion-cambio-esta-clave}
+      APP_JWT_EXPIRATION_MINUTES: ${APP_JWT_EXPIRATION_MINUTES:-480}
+      APP_PAGUI_ENABLED: ${APP_PAGUI_ENABLED:-false}
+      APP_PAGUI_BASE_URL: ${APP_PAGUI_BASE_URL:-http://pagui-backend:3000}
+      APP_PAGUI_EMAIL: ${APP_PAGUI_EMAIL:-}
+      APP_PAGUI_PASSWORD: ${APP_PAGUI_PASSWORD:-}
+      APP_PAGUI_BANK_ID: ${APP_PAGUI_BANK_ID:-1}
+      APP_PAGUI_AUTH_CACHE_MINUTES: ${APP_PAGUI_AUTH_CACHE_MINUTES:-30}
+      APP_PAGUI_QR_CACHE_SECONDS: ${APP_PAGUI_QR_CACHE_SECONDS:-120}
+      APP_GROK_API_KEY: ${APP_GROK_API_KEY:-}
+      APP_GROK_MODEL: ${APP_GROK_MODEL:-grok-4.20-reasoning}
+      APP_GROK_SYSTEM_PROMPT: ${APP_GROK_SYSTEM_PROMPT:-Eres un analista de operaciones para restaurantes. Resume hallazgos, riesgos y acciones concretas.}
     ports:
-      - "8080:8080"
+      - "${BACKEND_HOST_PORT:-8080}:8080"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:${BACKEND_HOST_PORT:-8080}}
+        VITE_PURCHASES_WHATSAPP_NUMBER: ${VITE_PURCHASES_WHATSAPP_NUMBER:-59165900645}
+    container_name: restoconnect-frontend
+    depends_on:
+      backend:
+        condition: service_started
+    ports:
+      - "${FRONTEND_HOST_PORT:-4173}:80"
+    restart: unless-stopped
 
 volumes:
   postgres-data:
-
+  redis-data:

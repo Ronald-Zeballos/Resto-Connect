@@ -43,6 +43,12 @@ public class MesaService {
         return new QrMesaResponse(mesa.getId(), mesa.getNumero(), mesa.getCodigoQr());
     }
 
+    public MesaResponse obtenerPorCodigoQr(String codigoQr) {
+        Mesa mesa = mesaRepository.findByCodigoQr(codigoQr)
+                .orElseThrow(() -> new NotFoundException("Mesa no encontrada para el codigo QR indicado."));
+        return MesaResponse.from(mesa);
+    }
+
     public Mesa obtenerActiva(UUID id) {
         Mesa mesa = mesaRepository.findById(id).orElseThrow(() -> new NotFoundException("Mesa no encontrada."));
         if (mesa.getEstado() == EstadoMesa.BLOQUEADA || mesa.getEstado() == EstadoMesa.INACTIVA) {
@@ -51,4 +57,3 @@ public class MesaService {
         return mesa;
     }
 }
-

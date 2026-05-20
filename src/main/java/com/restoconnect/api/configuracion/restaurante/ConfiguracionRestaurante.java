@@ -37,5 +37,46 @@ public class ConfiguracionRestaurante extends BaseEntity {
 
     @Column(nullable = false, precision = 6, scale = 2)
     private BigDecimal porcentajeImpuesto;
-}
 
+    @Column(nullable = false)
+    private boolean pagosQrHabilitado;
+
+    @Column(nullable = false)
+    private String proveedorQr;
+
+    @Column
+    private String paguiBaseUrl;
+
+    @Column
+    private String paguiEmail;
+
+    @Column
+    private String paguiPassword;
+
+    @Column
+    private Integer paguiBankId;
+
+    @Column
+    private String qrCuentaTitular;
+
+    @Column
+    private String qrCuentaBanco;
+
+    @Column
+    private String qrCuentaNumero;
+
+    @Column
+    private String qrCuentaTipo;
+
+    @Column
+    private String qrComercioCodigo;
+
+    @Column(length = 500)
+    private String grokApiKey;
+
+    @Column
+    private String grokModelo;
+
+    @Column(columnDefinition = "text")
+    private String grokSystemPrompt;
+}

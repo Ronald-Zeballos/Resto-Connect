@@ -1,6 +1,6 @@
 # RestoConnect API
 
-Backend empresarial para `RestoConnect Pro` construido con `Java 21`, `Spring Boot 3`, `Maven`, `PostgreSQL`, `Spring Data JPA`, `Flyway`, `Spring Security + JWT` y notificaciones en tiempo real por `Server-Sent Events`.
+Backend empresarial para `RestoConnect Pro` construido con `Java 21`, `Spring Boot 3`, `Maven`, `PostgreSQL`, `Redis`, `Spring Data JPA`, `Flyway`, `Spring Security + JWT` y notificaciones en tiempo real por `Server-Sent Events`.
 
 ## Arquitectura
 
@@ -14,7 +14,7 @@ Paquetes principales:
 - `mesa`: gestion de mesas y QR.
 - `menu.categoria` y `menu.producto`: catalogo, productos y recetas.
 - `pedido`: crear, validar, consultar, cambiar estado y cancelar pedidos.
-- `pago`: cobro en efectivo y pasarela simulada.
+- `pago`: cobro en efectivo, QR interoperable y cierre de cuenta.
 - `facturacion`: generacion de factura.
 - `inventario.item`, `inventario.movimiento`, `inventario.stock`, `inventario.alerta`, `inventario.parametros`, `inventario.prediccion`.
 - `compras.proveedor` y `compras.ordencompra`.
@@ -71,17 +71,64 @@ docker compose up --build
 
 Servicios:
 
+- Frontend: `http://localhost:4173`
 - API: `http://localhost:8080`
 - Swagger: `http://localhost:8080/swagger-ui.html`
 - PostgreSQL: `localhost:5432`
+- Redis: `localhost:6379`
+
+Si ya tienes servicios ocupando esos puertos, puedes cambiarlos desde `.env` con:
+
+- `FRONTEND_HOST_PORT`
+- `BACKEND_HOST_PORT`
+- `POSTGRES_HOST_PORT`
+- `REDIS_HOST_PORT`
 
 Variables importantes:
 
 - `SPRING_DATASOURCE_URL`
 - `SPRING_DATASOURCE_USERNAME`
 - `SPRING_DATASOURCE_PASSWORD`
+- `SPRING_DATA_REDIS_HOST`
+- `SPRING_DATA_REDIS_PORT`
 - `APP_JWT_SECRET`
 - `APP_JWT_EXPIRATION_MINUTES`
+
+Puedes copiar la base de variables desde:
+
+```bash
+cp .env.example .env
+```
+
+## Activar pagos QR reales con `pagui`
+
+El stack base deja RestoConnect listo con PostgreSQL, Redis, API y frontend. Para levantar tambien el proveedor QR externo `pagui`, usa la capa adicional:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.payments.yml up --build
+```
+
+Servicios extra en modo pagos:
+
+- `pagui-backend`: `http://localhost:3000`
+- `pagui-postgres`: `localhost:5439`
+- `pagui-redis`: `localhost:6380`
+
+Tambien puedes mover esos puertos si los tienes ocupados:
+
+- `PAGUI_BACKEND_HOST_PORT`
+- `PAGUI_POSTGRES_HOST_PORT`
+- `PAGUI_REDIS_HOST_PORT`
+
+Variables importantes para pagos:
+
+- `APP_PAGUI_ENABLED`
+- `APP_PAGUI_BASE_URL`
+- `APP_PAGUI_EMAIL`
+- `APP_PAGUI_PASSWORD`
+- `APP_PAGUI_BANK_ID`
+
+Redis se usa en RestoConnect para cachear el token de autenticacion de `pagui` y el estado reciente de los QRs, reduciendo reintentos innecesarios y haciendo el flujo mas resistente si el proveedor QR responde lento.
 
 ## Endpoints principales
 
@@ -120,6 +167,11 @@ Variables importantes:
 
 - `POST /api/pagos/efectivo`
 - `POST /api/pagos/pasarela/simular`
+- `GET /api/pagos/qr/cobrables`
+- `POST /api/pagos/qr/generar`
+- `GET /api/pagos/qr/{qrId}`
+- `DELETE /api/pagos/qr/{qrId}`
+- `POST /api/pagos/qr/{qrId}/confirmar`
 - `GET /api/pagos/pendiente-efectivo`
 - `POST /api/facturas/generar/{pedidoId}`
 - `GET /api/facturas/{id}`

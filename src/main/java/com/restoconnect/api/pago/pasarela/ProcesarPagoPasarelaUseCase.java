@@ -54,7 +54,7 @@ public class ProcesarPagoPasarelaUseCase {
         pago.setEstado(EstadoPago.PAGADO);
         pago.setMonto(request.monto());
         pago.setFechaPago(OffsetDateTime.now(ZoneOffset.UTC));
-        pago.setReferenciaTransaccion("TX-" + UUID.randomUUID().toString().substring(0, 8).toUpperCase());
+        pago.setReferenciaTransaccion(request.tokenSimulado());
         Pago persisted = pagoRepository.save(pago);
 
         pedido.setEstado(EstadoPedido.PAGADO);

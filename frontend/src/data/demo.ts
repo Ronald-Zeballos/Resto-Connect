@@ -1,38 +1,59 @@
-import type { Alerta, Incidencia, InventarioItem, Mesa, OrdenCompra, Pedido, Prediccion, Producto } from "../types";
+import type { Alerta, Categoria, Incidencia, InventarioItem, Mesa, OrdenCompra, Pedido, Prediccion, Producto } from "../types";
+import { resolveImageSrc } from "../shared/media/imageResolver";
 
 export const imageForProduct: Record<string, string> = {
-  "Hamburguesa simple": "/images/burger-simple.jpg",
-  "Hamburguesa con queso": "/images/burger-cheese.jpg",
-  "Papas fritas": "/images/fries.jpg",
-  "Pollo crispy": "/images/crispy-chicken.jpg",
-  "Taco de pollo": "/images/chicken-taco.jpg",
-  "Taco de carne": "/images/beef-taco.jpg",
-  "Ensalada fresca": "/images/fresh-salad.jpg",
-  "Combo burger": "/images/burger-double.jpg",
-  "Refresco regular": "/images/soda.jpg",
-  "Hamburguesa doble": "/images/burger-double.jpg"
+  "Hamburguesa simple": "/images/burger-simple.png",
+  "Hamburguesa con queso": "/images/burger-cheese.png",
+  "Papas fritas": "/images/fries.png",
+  "Pollo crispy": "/images/crispy-chicken.png",
+  "Taco de pollo": "/images/chicken-taco.png",
+  "Taco de carne": "/images/beef-taco.png",
+  "Ensalada fresca": "/images/fresh-salad.png",
+  "Combo burger": "/images/burger-double.png",
+  "Refresco regular": "/images/soda.png",
+  "Hamburguesa doble": "/images/burger-double.png"
 };
 
+const imageForCategory: Record<string, string> = {
+  Hamburguesas: "/images/burger-double.png",
+  "Tacos y wraps": "/images/beef-taco.png",
+  Acompanamientos: "/images/fries.png",
+  Bebidas: "/images/soda.png"
+};
+
+export function resolveProductImage(nombre: string, categoria?: string, imagenUrl?: string) {
+  const fallback = imageForProduct[nombre] ?? (categoria ? imageForCategory[categoria] : undefined) ?? "/images/restaurant-hero.png";
+  return resolveImageSrc(imagenUrl, fallback);
+}
+
+export const demoCategorias: Categoria[] = [
+  { id: "cat-1", nombre: "Hamburguesas", descripcion: "Linea principal de burgers", activo: true },
+  { id: "cat-2", nombre: "Acompanamientos", descripcion: "Entradas y sides", activo: true },
+  { id: "cat-3", nombre: "Tacos y wraps", descripcion: "Wraps y tacos operativos", activo: true },
+  { id: "cat-4", nombre: "Bebidas", descripcion: "Refrescos y bebidas frias", activo: true }
+];
+
 export const demoProductos: Producto[] = [
-  ["1", "Hamburguesa simple", "Clasica con vegetales frescos", 18, "Hamburguesas"],
-  ["2", "Hamburguesa con queso", "Clasica con cheddar", 20, "Hamburguesas"],
-  ["3", "Papas fritas", "Papas crocantes de la casa", 9, "Acompanamientos"],
-  ["4", "Pollo crispy", "Pollo dorado con toque casero", 19, "Acompanamientos"],
-  ["5", "Taco de pollo", "Taco con pollo y vegetales", 16, "Tacos y wraps"],
-  ["6", "Taco de carne", "Taco de carne jugosa", 17, "Tacos y wraps"],
-  ["7", "Ensalada fresca", "Hojas verdes, tomate y queso", 12, "Acompanamientos"],
-  ["8", "Combo burger", "Hamburguesa con queso y papas", 28, "Hamburguesas"],
-  ["9", "Refresco regular", "Bebida fria individual", 6, "Bebidas"],
-  ["10", "Hamburguesa doble", "Doble porcion de carne", 24, "Hamburguesas"]
-].map(([id, nombre, descripcion, precio, categoria]) => ({
+  ["1", "Hamburguesa simple", "Clasica con vegetales frescos", 18, "cat-1", "Hamburguesas"],
+  ["2", "Hamburguesa con queso", "Clasica con cheddar", 20, "cat-1", "Hamburguesas"],
+  ["3", "Papas fritas", "Papas crocantes de la casa", 9, "cat-2", "Acompanamientos"],
+  ["4", "Pollo crispy", "Pollo dorado con toque casero", 19, "cat-2", "Acompanamientos"],
+  ["5", "Taco de pollo", "Taco con pollo y vegetales", 16, "cat-3", "Tacos y wraps"],
+  ["6", "Taco de carne", "Taco de carne jugosa", 17, "cat-3", "Tacos y wraps"],
+  ["7", "Ensalada fresca", "Hojas verdes, tomate y queso", 12, "cat-2", "Acompanamientos"],
+  ["8", "Combo burger", "Hamburguesa con queso y papas", 28, "cat-1", "Hamburguesas"],
+  ["9", "Refresco regular", "Bebida fria individual", 6, "cat-4", "Bebidas"],
+  ["10", "Hamburguesa doble", "Doble porcion de carne", 24, "cat-1", "Hamburguesas"]
+].map(([id, nombre, descripcion, precio, categoriaId, categoria]) => ({
   id: String(id),
   nombre: String(nombre),
   descripcion: String(descripcion),
   precio: Number(precio),
+  categoriaId: String(categoriaId),
   categoria: String(categoria),
   activo: true,
   disponible: true,
-  imagenUrl: imageForProduct[String(nombre)] ?? "/images/restaurant-hero.jpg"
+  imagenUrl: resolveProductImage(String(nombre), String(categoria))
 }));
 
 export const demoMesas: Mesa[] = [
@@ -64,7 +85,9 @@ export const demoInventario: InventarioItem[] = [
   stockMaximo: Number(stockMaximo),
   puntoReorden: Number(puntoReorden),
   costoUnitario: Number(costoUnitario),
-  clasificacionAbc: clasificacionAbc as InventarioItem["clasificacionAbc"]
+  clasificacionAbc: clasificacionAbc as InventarioItem["clasificacionAbc"],
+  activo: true,
+  estadoStock: Number(stockActual) <= Number(puntoReorden) ? "CRITICO" : "DISPONIBLE"
 }));
 
 export const demoPedidos: Pedido[] = [
@@ -80,9 +103,9 @@ export const demoAlertas: Alerta[] = [
 ];
 
 export const demoPredicciones: Prediccion[] = [
-  { id: "pr1", item: "Pan hamburguesa", consumoPromedioDiario: 5.5, diasHastaAgotamiento: 14.5, cantidadSugeridaCompra: 0, nivelRiesgo: "BAJO", confianza: 78 },
-  { id: "pr2", item: "Carne hamburguesa", consumoPromedioDiario: 6.5, diasHastaAgotamiento: 9.2, cantidadSugeridaCompra: 22, nivelRiesgo: "MEDIO", confianza: 82 },
-  { id: "pr3", item: "Jarabe gaseosa", consumoPromedioDiario: 1.2, diasHastaAgotamiento: 5.8, cantidadSugeridaCompra: 12, nivelRiesgo: "ALTO", confianza: 74 }
+  { id: "pr1", itemId: "401", item: "Pan hamburguesa", consumoPromedioDiario: 5.5, diasHastaAgotamiento: 14.5, cantidadSugeridaCompra: 0, nivelRiesgo: "BAJO", confianza: 78, motivo: "Consumo estable" },
+  { id: "pr2", itemId: "402", item: "Carne hamburguesa", consumoPromedioDiario: 6.5, diasHastaAgotamiento: 9.2, cantidadSugeridaCompra: 22, nivelRiesgo: "MEDIO", confianza: 82, motivo: "Demanda creciente" },
+  { id: "pr3", itemId: "410", item: "Jarabe gaseosa", consumoPromedioDiario: 1.2, diasHastaAgotamiento: 5.8, cantidadSugeridaCompra: 12, nivelRiesgo: "ALTO", confianza: 74, motivo: "Rotacion critica" }
 ];
 
 export const demoOrdenes: OrdenCompra[] = [

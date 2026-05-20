@@ -14,7 +14,20 @@ public record ConfiguracionRestauranteRequest(
         @NotBlank(message = "La direccion es obligatoria.") String direccion,
         @NotBlank(message = "El email es obligatorio.") @Email(message = "El email no es valido.") String email,
         @NotBlank(message = "La moneda es obligatoria.") String moneda,
-        @NotNull(message = "El porcentaje de impuesto es obligatorio.") @DecimalMin(value = "0.0", inclusive = true) BigDecimal porcentajeImpuesto
+        @NotNull(message = "El porcentaje de impuesto es obligatorio.") @DecimalMin(value = "0.0", inclusive = true) BigDecimal porcentajeImpuesto,
+        @NotNull(message = "Debes indicar si los pagos QR estan habilitados.") Boolean pagosQrHabilitado,
+        @NotBlank(message = "El proveedor QR es obligatorio.") String proveedorQr,
+        String paguiBaseUrl,
+        String paguiEmail,
+        String paguiPassword,
+        Integer paguiBankId,
+        String qrCuentaTitular,
+        String qrCuentaBanco,
+        String qrCuentaNumero,
+        String qrCuentaTipo,
+        String qrComercioCodigo,
+        String grokApiKey,
+        String grokModelo,
+        String grokSystemPrompt
 ) {
 }
-

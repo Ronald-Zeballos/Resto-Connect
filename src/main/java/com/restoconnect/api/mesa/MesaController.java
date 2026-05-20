@@ -43,5 +43,9 @@ public class MesaController {
     public ResponseEntity<QrMesaResponse> obtenerQr(@PathVariable UUID id) {
         return ResponseEntity.ok(mesaService.obtenerQr(id));
     }
-}
 
+    @GetMapping("/qr/{codigoQr}")
+    public ResponseEntity<MesaResponse> obtenerPorCodigoQr(@PathVariable String codigoQr) {
+        return ResponseEntity.ok(mesaService.obtenerPorCodigoQr(codigoQr));
+    }
+}
