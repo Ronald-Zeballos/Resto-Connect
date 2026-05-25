@@ -2,6 +2,7 @@ package com.restoconnect.api.inventario.item;
 
 import com.restoconnect.api.compras.proveedor.Proveedor;
 import com.restoconnect.api.compras.proveedor.ProveedorRepository;
+import com.restoconnect.api.inventario.categoria.CategoriaInventarioRepository;
 import com.restoconnect.api.shared.exception.BusinessException;
 import com.restoconnect.api.shared.exception.NotFoundException;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class CrearItemInventarioUseCase {
 
     private final ItemInventarioRepository itemInventarioRepository;
     private final ProveedorRepository proveedorRepository;
+    private final CategoriaInventarioRepository categoriaInventarioRepository;
 
     @Transactional
     public ItemInventarioResponse ejecutar(CrearItemInventarioRequest request) {
@@ -31,6 +33,7 @@ public class CrearItemInventarioUseCase {
         item.setTiempoEntregaProveedorDias(request.tiempoEntregaProveedorDias());
         item.setClasificacionAbc(request.clasificacionAbc() == null ? ClasificacionAbc.MEDIA : request.clasificacionAbc());
         item.setProveedorPreferido(resolveProveedor(request.proveedorPreferidoId()));
+        item.setCategoria(resolveCategoria(request.categoriaId()));
         return ItemInventarioResponse.from(itemInventarioRepository.save(item));
     }
 
@@ -49,6 +52,14 @@ public class CrearItemInventarioUseCase {
         }
         return proveedorRepository.findById(proveedorId)
                 .orElseThrow(() -> new NotFoundException("Proveedor no encontrado."));
+    }
+
+    private com.restoconnect.api.inventario.categoria.CategoriaInventario resolveCategoria(java.util.UUID categoriaId) {
+        if (categoriaId == null) {
+            return null;
+        }
+        return categoriaInventarioRepository.findById(categoriaId)
+                .orElseThrow(() -> new NotFoundException("Categoria no encontrada."));
     }
 }
 

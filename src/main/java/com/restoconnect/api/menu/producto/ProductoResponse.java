@@ -15,6 +15,12 @@ public record ProductoResponse(
         boolean activo,
         boolean disponible,
         String imagenUrl,
+        String codigoInterno,
+        BigDecimal costo,
+        boolean esVenta,
+        boolean esInsumo,
+        BigDecimal impuestoAplicable,
+        String unidadMedida,
         List<RecetaResponse> receta
 ) {
 }

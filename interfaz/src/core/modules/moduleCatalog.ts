@@ -1,4 +1,4 @@
-import { BarChart3, Bell, ChefHat, ClipboardList, CreditCard, Home, Package, Settings, ShoppingCart, Table2, Utensils } from "lucide-react";
+import { Banknote, BarChart3, Bell, BookOpen, Box, ChefHat, ClipboardList, CreditCard, DollarSign, Home, LayoutGrid, Package, Settings, ShoppingCart, Table2, UserCog, Users, Utensils } from "lucide-react";
 import type { ModuleMeta } from "./module.types";
 
 export const moduleCatalog: ModuleMeta[] = [
@@ -6,67 +6,97 @@ export const moduleCatalog: ModuleMeta[] = [
     id: "dashboard",
     path: "/",
     navLabel: "Resumen",
-    title: "Panorama del día",
+    title: "Panorama del dia",
     description: "Vista general de ventas, mesas, alertas y pedidos en curso.",
     port: "Resumen ejecutivo",
     summary: "Sigue el pulso del restaurante en un solo lugar.",
-    roles: ["ADMIN", "MESERO", "COCINA"],
-    icon: Home
+    roles: ["ADMIN", "GERENTE", "CAJERO", "MESERO", "COCINA"],
+    icon: Home,
+    group: "general"
   },
   {
     id: "mesas",
     path: "/mesas",
     navLabel: "Mesas",
     title: "Sala y mesas",
-    description: "Gestiona la ocupación, los QR y la rotación de mesas.",
-    port: "Atención en sala",
-    summary: "Controla el salón y el acceso al menú por QR.",
-    roles: ["ADMIN", "MESERO"],
-    icon: Table2
+    description: "Gestiona la ocupacion, los QR y la rotacion de mesas.",
+    port: "Atencion en sala",
+    summary: "Controla el salon y el acceso al menu por QR.",
+    roles: ["ADMIN", "GERENTE", "MESERO"],
+    icon: Table2,
+    group: "salon"
   },
   {
     id: "menu",
     path: "/menu",
     navLabel: "Menu",
     title: "Carta y precios",
-    description: "Administra productos, categorías y disponibilidad comercial.",
-    port: "Catálogo comercial",
+    description: "Administra productos, categorias y disponibilidad comercial.",
+    port: "Catalogo comercial",
     summary: "Mantiene la carta actualizada para sala y QR.",
-    roles: ["ADMIN", "MESERO"],
-    icon: Utensils
+    roles: ["ADMIN", "GERENTE", "MESERO"],
+    icon: Utensils,
+    group: "salon"
   },
   {
     id: "pedidos",
     path: "/pedidos",
     navLabel: "Pedidos",
     title: "Toma de pedidos",
-    description: "Registra órdenes, arma carritos y envía pedidos a operación.",
+    description: "Registra ordenes, arma carritos y envia pedidos a operacion.",
     port: "Servicio en mesa",
-    summary: "Conecta productos, mesas y atención del turno.",
-    roles: ["ADMIN", "MESERO"],
-    icon: ShoppingCart
-  },
-  {
-    id: "cocina",
-    path: "/cocina",
-    navLabel: "Cocina",
-    title: "Producción",
-    description: "Visualiza y mueve pedidos entre estados de preparación.",
-    port: "Cola de cocina",
-    summary: "Organiza la salida de platos del turno.",
-    roles: ["ADMIN", "COCINA"],
-    icon: ChefHat
+    summary: "Conecta productos, mesas y atencion del turno.",
+    roles: ["ADMIN", "GERENTE", "MESERO"],
+    icon: ShoppingCart,
+    group: "salon"
   },
   {
     id: "pagos",
     path: "/pagos",
     navLabel: "Pagos",
     title: "Cobros",
-    description: "Gestiona caja, métodos de pago y emisión de factura.",
-    port: "Caja y facturación",
-    summary: "Prepara el cierre del pedido y el comprobante.",
-    roles: ["ADMIN", "MESERO"],
-    icon: CreditCard
+    description: "Gestiona cobros, metodos de pago y emision de factura.",
+    port: "Cobros y facturacion",
+    summary: "Prepara el cobro del pedido y el comprobante.",
+    roles: ["ADMIN", "GERENTE", "CAJERO", "MESERO"],
+    icon: CreditCard,
+    group: "salon"
+  },
+  {
+    id: "cocina",
+    path: "/cocina",
+    navLabel: "Cocina",
+    title: "Produccion",
+    description: "Visualiza y mueve pedidos entre estados de preparacion.",
+    port: "Cola de cocina",
+    summary: "Organiza la salida de platos del turno.",
+    roles: ["ADMIN", "GERENTE", "COCINA"],
+    icon: ChefHat,
+    group: "cocina"
+  },
+  {
+    id: "recetas",
+    path: "/recetas",
+    navLabel: "Recetas",
+    title: "Recetas y combos",
+    description: "Define ingredientes y cantidades para cada producto.",
+    port: "Composicion de platos",
+    summary: "Controla la produccion con recetas detalladas.",
+    roles: ["ADMIN", "GERENTE", "INVENTARIO", "COCINA"],
+    icon: BookOpen,
+    group: "cocina"
+  },
+  {
+    id: "productos",
+    path: "/productos",
+    navLabel: "Productos",
+    title: "Productos e insumos",
+    description: "Gestiona productos, costos, codigos, tipos e impuestos.",
+    port: "Catalogo completo",
+    summary: "Configura todo el catalogo con costos e impuestos.",
+    roles: ["ADMIN", "GERENTE", "INVENTARIO"],
+    icon: Box,
+    group: "inventario"
   },
   {
     id: "inventario",
@@ -76,19 +106,93 @@ export const moduleCatalog: ModuleMeta[] = [
     description: "Controla stock, alertas y consumo de insumos.",
     port: "Control de existencias",
     summary: "Cuida el stock y anticipa faltantes.",
-    roles: ["ADMIN"],
-    icon: Package
+    roles: ["ADMIN", "GERENTE", "INVENTARIO"],
+    icon: Package,
+    group: "inventario"
   },
   {
     id: "compras",
     path: "/compras",
-    navLabel: "Compras",
-    title: "Compras y reposición",
-    description: "Trabaja con pronósticos y órdenes de compra sugeridas.",
-    port: "Pronóstico y abastecimiento",
-    summary: "Convierte el análisis en decisiones de compra.",
-    roles: ["ADMIN"],
-    icon: ClipboardList
+    navLabel: "Benchmarking",
+    title: "Benchmarking competitivo",
+    description: "Monitorea precios de la competencia y registra observaciones de mercado.",
+    port: "Radar comercial",
+    summary: "Compara tu carta con el mercado sin mezclarlo con reposicion.",
+    roles: ["ADMIN", "GERENTE", "INVENTARIO"],
+    icon: ClipboardList,
+    group: "inventario"
+  },
+  {
+    id: "proveedores",
+    path: "/proveedores",
+    navLabel: "Proveedores",
+    title: "Proveedores",
+    description: "Administra proveedores, contactos y datos de compra.",
+    port: "Registro de proveedores",
+    summary: "Gestiona tu red de abastecimiento.",
+    roles: ["ADMIN", "GERENTE", "INVENTARIO", "CONTADOR"],
+    icon: Users,
+    group: "inventario"
+  },
+  {
+    id: "caja",
+    path: "/caja",
+    navLabel: "Caja",
+    title: "Caja",
+    description: "Controla apertura, cierre y gastos del turno activo.",
+    port: "Corte de caja",
+    summary: "Abre y cierra turnos, controla el efectivo y los gastos.",
+    roles: ["ADMIN", "GERENTE", "CAJERO"],
+    icon: Banknote,
+    group: "caja"
+  },
+  {
+    id: "clientes",
+    path: "/clientes",
+    navLabel: "Clientes",
+    title: "Clientes",
+    description: "Registro y gestion de clientes del restaurante.",
+    port: "Base de clientes",
+    summary: "Administra la informacion de tus comensales.",
+    roles: ["ADMIN", "GERENTE", "CAJERO", "MESERO"],
+    icon: LayoutGrid,
+    group: "clientes"
+  },
+  {
+    id: "personal",
+    path: "/personal",
+    navLabel: "Personal",
+    title: "Gestion de personal",
+    description: "Administra meseros, cocineros, cajeros y demas personal del restaurante.",
+    port: "Registro de empleados",
+    summary: "Gestiona los usuarios del sistema y sus roles.",
+    roles: ["ADMIN", "GERENTE"],
+    icon: UserCog,
+    group: "sistema"
+  },
+  {
+    id: "contabilidad",
+    path: "/contabilidad",
+    navLabel: "Contabilidad",
+    title: "Contabilidad",
+    description: "Cuentas por pagar/cobrar, gastos, ingresos y reportes contables.",
+    port: "Gestion contable",
+    summary: "Controla las finanzas del restaurante.",
+    roles: ["ADMIN", "GERENTE", "CONTADOR"],
+    icon: DollarSign,
+    group: "contabilidad"
+  },
+  {
+    id: "reportes",
+    path: "/reportes",
+    navLabel: "Reportes",
+    title: "Analisis del negocio",
+    description: "Expone metricas de ventas, pagos e inventario.",
+    port: "Ventas y rendimiento",
+    summary: "Ayuda a decidir con datos del restaurante.",
+    roles: ["ADMIN", "GERENTE", "CONTADOR"],
+    icon: BarChart3,
+    group: "contabilidad"
   },
   {
     id: "incidencias",
@@ -98,19 +202,9 @@ export const moduleCatalog: ModuleMeta[] = [
     description: "Centraliza incidentes, tareas y seguimientos del turno.",
     port: "Seguimiento operativo",
     summary: "Ordena lo urgente y da visibilidad al equipo.",
-    roles: ["ADMIN", "MESERO", "COCINA"],
-    icon: Bell
-  },
-  {
-    id: "reportes",
-    path: "/reportes",
-    navLabel: "Reportes",
-    title: "Análisis del negocio",
-    description: "Expone métricas de ventas, pagos e inventario.",
-    port: "Ventas y rendimiento",
-    summary: "Ayuda a decidir con datos del restaurante.",
-    roles: ["ADMIN"],
-    icon: BarChart3
+    roles: ["ADMIN", "GERENTE", "MESERO", "COCINA"],
+    icon: Bell,
+    group: "sistema"
   },
   {
     id: "configuracion",
@@ -118,9 +212,10 @@ export const moduleCatalog: ModuleMeta[] = [
     navLabel: "Configuracion",
     title: "Ajustes del negocio",
     description: "Administra datos fiscales y operativos del restaurante.",
-    port: "Configuración general",
-    summary: "Reúne la información base del local.",
-    roles: ["ADMIN"],
-    icon: Settings
+    port: "Configuracion general",
+    summary: "Reune la informacion base del local.",
+    roles: ["ADMIN", "GERENTE"],
+    icon: Settings,
+    group: "sistema"
   }
 ];

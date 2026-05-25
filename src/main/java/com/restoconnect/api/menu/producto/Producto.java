@@ -36,5 +36,24 @@ public class Producto extends BaseEntity {
     @Column(nullable = false)
     private boolean disponible = true;
 
+    @Column(name = "imagen_url", columnDefinition = "text")
     private String imagenUrl;
+
+    @Column(name = "codigo_interno")
+    private String codigoInterno;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal costo = BigDecimal.ZERO;
+
+    @Column(name = "es_venta", nullable = false)
+    private boolean esVenta = true;
+
+    @Column(name = "es_insumo", nullable = false)
+    private boolean esInsumo = false;
+
+    @Column(name = "impuesto_aplicable", precision = 6, scale = 2)
+    private BigDecimal impuestoAplicable = BigDecimal.ZERO;
+
+    @Column(name = "unidad_medida", length = 20)
+    private String unidadMedida = "UNIDAD";
 }

@@ -2,11 +2,33 @@ import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { LogOut } from "lucide-react";
 import { useSession } from "../auth/sessionStore";
 import { moduleRegistry } from "../modules/moduleRegistry";
+import type { ModuleGroup } from "../modules/module.types";
+
+const GROUP_LABELS: Record<ModuleGroup, string> = {
+  general: "General",
+  salon: "Salón",
+  cocina: "Cocina",
+  inventario: "Inventario",
+  caja: "Caja",
+  clientes: "Clientes",
+  contabilidad: "Contabilidad",
+  sistema: "Sistema"
+};
+
+const GROUP_ORDER: ModuleGroup[] = ["general", "salon", "cocina", "inventario", "caja", "clientes", "contabilidad", "sistema"];
 
 export function AppShell() {
   const { role, name, signOut } = useSession();
   const navigate = useNavigate();
   const links = moduleRegistry.filter((item) => item.roles.includes(role));
+
+  const grouped = GROUP_ORDER
+    .map((group) => ({
+      group,
+      label: GROUP_LABELS[group],
+      items: links.filter((item) => item.group === group)
+    }))
+    .filter((section) => section.items.length > 0);
 
   return (
     <div className="min-h-screen bg-oatmeal">
@@ -30,27 +52,36 @@ export function AppShell() {
             </div>
           </div>
 
-          <nav className="flex gap-2 overflow-x-auto px-3 pb-5 lg:block lg:space-y-2 lg:overflow-visible lg:px-5">
-            {links.map((item) => {
-              const Icon = item.icon;
-              return (
-                <NavLink
-                  key={item.id}
-                  to={item.path}
-                  end={item.path === "/"}
-                  className={({ isActive }) =>
-                    `group flex min-w-max items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition ${
-                      isActive ? "bg-white text-ink shadow-soft" : "text-white/75 hover:bg-white/10 hover:text-white"
-                    }`
-                  }
-                >
-                  <span className="rounded-xl bg-white/10 p-2 text-current">
-                    <Icon size={18} />
-                  </span>
-                  <span>{item.navLabel}</span>
-                </NavLink>
-              );
-            })}
+          <nav className="flex gap-2 overflow-x-auto px-3 pb-5 lg:block lg:space-y-4 lg:overflow-visible lg:px-5">
+            {grouped.map((section) => (
+              <div key={section.group} className="space-y-1">
+                <p className="hidden px-4 pt-2 pb-1 text-[11px] font-bold uppercase tracking-[0.18em] text-white/35 lg:block">
+                  {section.label}
+                </p>
+                <div className="flex gap-1 lg:block lg:space-y-1">
+                  {section.items.map((item) => {
+                    const Icon = item.icon;
+                    return (
+                      <NavLink
+                        key={item.id}
+                        to={item.path}
+                        end={item.path === "/"}
+                        className={({ isActive }) =>
+                          `group flex min-w-max items-center gap-3 rounded-2xl px-4 py-3 text-sm font-bold transition ${
+                            isActive ? "bg-white text-ink shadow-soft" : "text-white/75 hover:bg-white/10 hover:text-white"
+                          }`
+                        }
+                      >
+                        <span className="rounded-xl bg-white/10 p-2 text-current">
+                          <Icon size={18} />
+                        </span>
+                        <span>{item.navLabel}</span>
+                      </NavLink>
+                    );
+                  })}
+                </div>
+              </div>
+            ))}
           </nav>
 
           <div className="hidden p-5 pt-0 lg:block">

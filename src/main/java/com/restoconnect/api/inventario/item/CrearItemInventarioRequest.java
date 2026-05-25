@@ -17,7 +17,8 @@ public record CrearItemInventarioRequest(
         @NotNull(message = "El costo unitario es obligatorio.") @DecimalMin(value = "0.0", inclusive = true) BigDecimal costoUnitario,
         UUID proveedorPreferidoId,
         @NotNull(message = "El tiempo de entrega es obligatorio.") Integer tiempoEntregaProveedorDias,
-        ClasificacionAbc clasificacionAbc
+        ClasificacionAbc clasificacionAbc,
+        UUID categoriaId
 ) {
 }
 

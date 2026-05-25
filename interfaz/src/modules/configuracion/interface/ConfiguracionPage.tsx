@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Building2, ClipboardCheck, Sparkles, WalletCards, X } from "lucide-react";
+import { Building2, ClipboardCheck, WalletCards, X } from "lucide-react";
 import { InlineFeedback, ModulePanel, PageHeader } from "../../../shared/ui/primitives";
 import { configuracionPort } from "../adapters/configuracionRepository";
 import { useConfiguracionViewModel } from "../application/useConfiguracionViewModel";
@@ -19,7 +19,6 @@ export function ConfiguracionPage() {
   const businessFields = data.filter((field) => field.group === "general");
   const qrFields = data.filter((field) => field.group === "pagosQr");
   const bankFields = data.filter((field) => field.group === "cuentaQr");
-  const aiFields = data.filter((field) => field.group === "iaGrok");
 
   function renderField(field: ConfigField) {
     const value = values[field.key] ?? "";
@@ -51,28 +50,19 @@ export function ConfiguracionPage() {
       );
     }
 
-    const useTextarea = field.key === "grokSystemPrompt";
     const inputType = field.type === "password" ? "password" : field.type === "number" ? "number" : field.type === "email" ? "email" : "text";
 
     return (
-      <label key={field.key} className={useTextarea ? "md:col-span-2" : undefined}>
+      <label key={field.key}>
         <span className="mb-1 block text-sm font-bold">{field.label}</span>
         {field.helperText ? <span className="mb-2 block text-xs text-stone-500">{field.helperText}</span> : null}
-        {useTextarea ? (
-          <textarea
-            className="input min-h-28 resize-y"
-            value={value}
-            onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))}
-          />
-        ) : (
-          <input
-            className="input"
-            type={inputType}
-            step={field.type === "number" ? "0.01" : undefined}
-            value={value}
-            onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))}
-          />
-        )}
+        <input
+          className="input"
+          type={inputType}
+          step={field.type === "number" ? "0.01" : undefined}
+          value={value}
+          onChange={(event) => setValues((current) => ({ ...current, [field.key]: event.target.value }))}
+        />
       </label>
     );
   }
@@ -140,21 +130,6 @@ export function ConfiguracionPage() {
         </div>
         <form className="grid gap-4 md:grid-cols-2">
           {qrFields.map(renderField)}
-        </form>
-      </ModulePanel>
-
-      <ModulePanel title="IA con Grok" port="Analisis asistido" description="La API key de xAI se toma del archivo .env. Aqui ajustas el modelo y la instruccion base para los analisis.">
-        <div className="mb-4 rounded-3xl border border-stone-200 bg-stone-50 p-4 text-sm text-stone-600">
-          <div className="flex items-center gap-3">
-            <Sparkles size={18} className="text-tomato" />
-            <div>
-              <p className="font-bold text-ink">La API key de Grok ahora vive solo en variables de entorno</p>
-              <p>Usa `APP_GROK_API_KEY` en tu archivo `.env`. Desde esta pantalla solo definimos el modelo y la instruccion base para el analisis.</p>
-            </div>
-          </div>
-        </div>
-        <form className="grid gap-4 md:grid-cols-2">
-          {aiFields.map(renderField)}
         </form>
       </ModulePanel>
 

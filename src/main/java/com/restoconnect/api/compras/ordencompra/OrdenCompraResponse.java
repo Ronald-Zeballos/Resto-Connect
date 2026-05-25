@@ -12,6 +12,11 @@ public record OrdenCompraResponse(
         EstadoOrdenCompra estado,
         BigDecimal costoEstimado,
         LocalDate fechaRecepcion,
+        String estadoPago,
+        LocalDate fechaPago,
+        UUID usuarioRecibeId,
+        String usuarioRecibeNombre,
+        String notas,
         List<DetalleOrdenCompraResponse> detalles
 ) {
     public static OrdenCompraResponse from(OrdenCompra ordenCompra) {
@@ -22,6 +27,11 @@ public record OrdenCompraResponse(
                 ordenCompra.getEstado(),
                 ordenCompra.getCostoEstimado(),
                 ordenCompra.getFechaRecepcion(),
+                ordenCompra.getEstadoPago(),
+                ordenCompra.getFechaPago(),
+                ordenCompra.getUsuarioRecibe() != null ? ordenCompra.getUsuarioRecibe().getId() : null,
+                ordenCompra.getUsuarioRecibe() != null ? ordenCompra.getUsuarioRecibe().getNombre() : null,
+                ordenCompra.getNotas(),
                 ordenCompra.getDetalles().stream()
                         .map(detalle -> new DetalleOrdenCompraResponse(
                                 detalle.getItemInventario().getId(),

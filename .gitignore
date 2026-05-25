@@ -12,3 +12,6 @@ docker-compose.override.yml
 frontend/node_modules/
 frontend/dist/
 frontend/tsconfig.tsbuildinfo
+interfaz/node_modules/
+interfaz/dist/
+interfaz/tsconfig.tsbuildinfo

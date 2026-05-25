@@ -5,10 +5,10 @@ import java.math.BigDecimal;
 import java.util.UUID;
 
 public record RecetaResponse(
+        UUID id,
         UUID itemInventarioId,
         String itemInventarioNombre,
         BigDecimal cantidadNecesaria,
         UnidadMedida unidadMedida
 ) {
 }
-

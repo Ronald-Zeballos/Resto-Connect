@@ -15,18 +15,19 @@ public record ConfiguracionRestauranteResponse(
         BigDecimal porcentajeImpuesto,
         boolean pagosQrHabilitado,
         String proveedorQr,
-        String paguiBaseUrl,
-        String paguiEmail,
-        String paguiPassword,
-        Integer paguiBankId,
         String qrCuentaTitular,
         String qrCuentaBanco,
         String qrCuentaNumero,
         String qrCuentaTipo,
         String qrComercioCodigo,
-        String grokApiKey,
-        String grokModelo,
-        String grokSystemPrompt
+        String logoUrl,
+        String mensajePieFactura,
+        String tipoServicio,
+        BigDecimal propinaPorcentaje,
+        Boolean propinaIncluida,
+        String inventarioValoracion,
+        Boolean controlarVencimientos,
+        Boolean controlarLotes
 ) {
     public static ConfiguracionRestauranteResponse from(ConfiguracionRestaurante configuracion) {
         return new ConfiguracionRestauranteResponse(
@@ -41,18 +42,19 @@ public record ConfiguracionRestauranteResponse(
                 configuracion.getPorcentajeImpuesto(),
                 configuracion.isPagosQrHabilitado(),
                 configuracion.getProveedorQr(),
-                configuracion.getPaguiBaseUrl(),
-                configuracion.getPaguiEmail(),
-                configuracion.getPaguiPassword(),
-                configuracion.getPaguiBankId(),
                 configuracion.getQrCuentaTitular(),
                 configuracion.getQrCuentaBanco(),
                 configuracion.getQrCuentaNumero(),
                 configuracion.getQrCuentaTipo(),
                 configuracion.getQrComercioCodigo(),
-                null,
-                configuracion.getGrokModelo(),
-                configuracion.getGrokSystemPrompt()
+                configuracion.getLogoUrl(),
+                configuracion.getMensajePieFactura(),
+                configuracion.getTipoServicio(),
+                configuracion.getPropinaPorcentaje(),
+                configuracion.isPropinaIncluida(),
+                configuracion.getInventarioValoracion(),
+                configuracion.isControlarVencimientos(),
+                configuracion.isControlarLotes()
         );
     }
 }

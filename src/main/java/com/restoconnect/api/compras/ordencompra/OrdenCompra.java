@@ -1,5 +1,6 @@
 package com.restoconnect.api.compras.ordencompra;
 
+import com.restoconnect.api.auth.Usuario;
 import com.restoconnect.api.compras.proveedor.Proveedor;
 import com.restoconnect.api.shared.domain.BaseEntity;
 import jakarta.persistence.CascadeType;
@@ -36,6 +37,19 @@ public class OrdenCompra extends BaseEntity {
     private BigDecimal costoEstimado;
 
     private LocalDate fechaRecepcion;
+
+    @Column(name = "estado_pago", length = 20)
+    private String estadoPago = "PENDIENTE";
+
+    @Column(name = "fecha_pago")
+    private LocalDate fechaPago;
+
+    @ManyToOne
+    @JoinColumn(name = "usuario_recibe_id")
+    private Usuario usuarioRecibe;
+
+    @Column(columnDefinition = "TEXT")
+    private String notas;
 
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenCompraDetalle> detalles = new ArrayList<>();

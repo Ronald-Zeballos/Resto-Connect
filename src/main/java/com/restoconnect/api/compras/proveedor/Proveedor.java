@@ -30,5 +30,11 @@ public class Proveedor extends BaseEntity {
 
     @Column(nullable = false)
     private boolean activo = true;
+
+    @Column(name = "persona_contacto", length = 200)
+    private String personaContacto;
+
+    @Column(name = "pagina_web", length = 300)
+    private String paginaWeb;
 }
 

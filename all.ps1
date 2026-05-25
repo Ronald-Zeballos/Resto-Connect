@@ -67,19 +67,7 @@ function Ensure-EnvFile {
 }
 
 function Get-ComposeArguments {
-    $paymentsCompose = Join-Path $repoRoot "docker-compose.payments.yml"
-    $paguiBackendPath = Resolve-Path (Join-Path $repoRoot "..\pagui\backend") -ErrorAction SilentlyContinue
-
-    $args = @("compose", "-f", "docker-compose.yml")
-
-    if (-not $BaseOnly -and (Test-Path $paymentsCompose) -and $paguiBackendPath) {
-        $args += @("-f", "docker-compose.payments.yml")
-        Write-Step "Se levantara el stack completo con pagos QR."
-    } else {
-        Write-Step "Se levantara el stack base."
-    }
-
-    $args += @("up", "--build")
+    $args = @("compose", "-f", "docker-compose.yml", "up", "--build")
 
     if ($Detach) {
         $args += "-d"

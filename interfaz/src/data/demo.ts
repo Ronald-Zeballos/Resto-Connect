@@ -9,6 +9,10 @@ export const imageForProduct: Record<string, string> = {
   "Taco de pollo": "/images/chicken-taco.png",
   "Taco de carne": "/images/beef-taco.png",
   "Ensalada fresca": "/images/fresh-salad.png",
+  "Ensalada cesar": "/images/fresh-salad.png",
+  "Ensalada de quinoa": "/images/fresh-salad.png",
+  "Ensalada mediterranea": "/images/fresh-salad.png",
+  "Bowl verde con pollo": "/images/fresh-salad.png",
   "Combo burger": "/images/burger-double.png",
   "Refresco regular": "/images/soda.png",
   "Hamburguesa doble": "/images/burger-double.png"
@@ -18,7 +22,8 @@ const imageForCategory: Record<string, string> = {
   Hamburguesas: "/images/burger-double.png",
   "Tacos y wraps": "/images/beef-taco.png",
   Acompanamientos: "/images/fries.png",
-  Bebidas: "/images/soda.png"
+  Bebidas: "/images/soda.png",
+  Ensaladas: "/images/fresh-salad.png"
 };
 
 export function resolveProductImage(nombre: string, categoria?: string, imagenUrl?: string) {
@@ -30,7 +35,8 @@ export const demoCategorias: Categoria[] = [
   { id: "cat-1", nombre: "Hamburguesas", descripcion: "Linea principal de burgers", activo: true },
   { id: "cat-2", nombre: "Acompanamientos", descripcion: "Entradas y sides", activo: true },
   { id: "cat-3", nombre: "Tacos y wraps", descripcion: "Wraps y tacos operativos", activo: true },
-  { id: "cat-4", nombre: "Bebidas", descripcion: "Refrescos y bebidas frias", activo: true }
+  { id: "cat-4", nombre: "Bebidas", descripcion: "Refrescos y bebidas frias", activo: true },
+  { id: "cat-5", nombre: "Ensaladas", descripcion: "Opciones frescas y bowls listos para llevar", activo: true }
 ];
 
 export const demoProductos: Producto[] = [
@@ -43,7 +49,11 @@ export const demoProductos: Producto[] = [
   ["7", "Ensalada fresca", "Hojas verdes, tomate y queso", 12, "cat-2", "Acompanamientos"],
   ["8", "Combo burger", "Hamburguesa con queso y papas", 28, "cat-1", "Hamburguesas"],
   ["9", "Refresco regular", "Bebida fria individual", 6, "cat-4", "Bebidas"],
-  ["10", "Hamburguesa doble", "Doble porcion de carne", 24, "cat-1", "Hamburguesas"]
+  ["10", "Hamburguesa doble", "Doble porcion de carne", 24, "cat-1", "Hamburguesas"],
+  ["11", "Ensalada cesar", "Lechuga crocante, pollo grillado y aderezo cesar", 22, "cat-5", "Ensaladas"],
+  ["12", "Ensalada de quinoa", "Quinoa, vegetales frescos y limon", 21, "cat-5", "Ensaladas"],
+  ["13", "Ensalada mediterranea", "Pepino, tomate, aceitunas y queso", 23, "cat-5", "Ensaladas"],
+  ["14", "Bowl verde con pollo", "Mix de hojas, pollo a la plancha y palta", 26, "cat-5", "Ensaladas"]
 ].map(([id, nombre, descripcion, precio, categoriaId, categoria]) => ({
   id: String(id),
   nombre: String(nombre),
@@ -66,15 +76,20 @@ export const demoMesas: Mesa[] = [
 
 export const demoInventario: InventarioItem[] = [
   ["401", "Pan hamburguesa", "Pan brioche para hamburguesa", "UNIDAD", 80, 20, 120, 30, 0.6, "ALTA"],
-  ["402", "Carne hamburguesa", "Carne de res porcionada", "UNIDAD", 60, 15, 90, 25, 2.1, "ALTA"],
+  ["402", "Carne hamburguesa", "Carne de res porcionada", "UNIDAD", 18, 15, 90, 25, 2.1, "ALTA"],
   ["403", "Lechuga fresca", "Lechuga para ensaladas", "GRAMO", 3000, 600, 5000, 900, 0.01, "MEDIA"],
   ["404", "Queso laminado", "Queso cheddar laminado", "UNIDAD", 90, 20, 140, 30, 0.45, "ALTA"],
   ["405", "Papas congeladas", "Papas para freir", "KG", 35, 8, 60, 12, 1.9, "ALTA"],
-  ["406", "Aceite vegetal", "Aceite para freidora", "LITRO", 25, 5, 40, 8, 2.8, "MEDIA"],
+  ["406", "Aceite vegetal", "Aceite para freidora", "LITRO", 7, 5, 40, 8, 2.8, "MEDIA"],
   ["407", "Pollo marinado", "Pollo para plancha", "UNIDAD", 50, 10, 80, 18, 2.4, "ALTA"],
   ["408", "Tortilla de trigo", "Tortilla para tacos", "UNIDAD", 100, 25, 160, 35, 0.35, "MEDIA"],
   ["409", "Tomate", "Tomate fresco", "GRAMO", 2400, 500, 4000, 800, 0.01, "MEDIA"],
-  ["410", "Jarabe gaseosa", "Base para refresco", "LITRO", 18, 4, 30, 6, 3.1, "BAJA"]
+  ["410", "Jarabe gaseosa", "Base para refresco", "LITRO", 5, 4, 30, 6, 3.1, "BAJA"],
+  ["411", "Quinoa cocida", "Base para bowls y ensaladas", "GRAMO", 3200, 600, 4500, 900, 0.02, "MEDIA"],
+  ["412", "Pepino", "Pepino fresco laminado", "GRAMO", 1800, 400, 3000, 700, 0.01, "MEDIA"],
+  ["413", "Aceituna negra", "Aceituna para ensaladas", "GRAMO", 900, 150, 1600, 250, 0.03, "BAJA"],
+  ["414", "Aderezo cesar", "Salsa para ensalada cesar", "GRAMO", 280, 250, 2500, 400, 0.02, "MEDIA"],
+  ["415", "Palta", "Palta fresca para bowls", "GRAMO", 1100, 200, 1800, 350, 0.03, "MEDIA"]
 ].map(([id, nombre, descripcion, unidadMedida, stockActual, stockMinimo, stockMaximo, puntoReorden, costoUnitario, clasificacionAbc]) => ({
   id: String(id),
   nombre: String(nombre),
@@ -97,9 +112,9 @@ export const demoPedidos: Pedido[] = [
 ];
 
 export const demoAlertas: Alerta[] = [
-  { id: "a1", titulo: "Stock bajo: Jarabe gaseosa", descripcion: "Quedan 18 litros, revisar punto de reorden.", severidad: "ADVERTENCIA" },
+  { id: "a1", titulo: "Stock bajo: Jarabe gaseosa", descripcion: "Quedan 5 litros, revisar punto de reorden.", severidad: "ADVERTENCIA" },
   { id: "a2", titulo: "QR mesa 4 desgastado", descripcion: "Incidencia abierta por mesero principal.", severidad: "INFO" },
-  { id: "a3", titulo: "Prediccion disponible", descripcion: "3 insumos requieren compra sugerida.", severidad: "CRITICA" }
+  { id: "a3", titulo: "Reposicion urgente", descripcion: "4 insumos cayeron por debajo del punto de reorden.", severidad: "CRITICA" }
 ];
 
 export const demoPredicciones: Prediccion[] = [

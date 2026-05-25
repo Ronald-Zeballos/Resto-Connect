@@ -45,18 +45,6 @@ public class ConfiguracionRestaurante extends BaseEntity {
     private String proveedorQr;
 
     @Column
-    private String paguiBaseUrl;
-
-    @Column
-    private String paguiEmail;
-
-    @Column
-    private String paguiPassword;
-
-    @Column
-    private Integer paguiBankId;
-
-    @Column
     private String qrCuentaTitular;
 
     @Column
@@ -71,12 +59,36 @@ public class ConfiguracionRestaurante extends BaseEntity {
     @Column
     private String qrComercioCodigo;
 
+    @Column(nullable = false)
+    private Integer paginasPorCarta = 1;
+
+    @Column(nullable = false, length = 10)
+    private String idiomaDefecto = "es";
+
+    @Column(nullable = false, length = 50)
+    private String zonaHoraria = "America/La_Paz";
+
+    @Column(length = 20)
+    private String formatoFecha = "DD/MM/YYYY";
+
     @Column(length = 500)
-    private String grokApiKey;
+    private String logoUrl;
 
-    @Column
-    private String grokModelo;
+    @Column(length = 300)
+    private String mensajePieFactura;
 
-    @Column(columnDefinition = "text")
-    private String grokSystemPrompt;
+    @Column(length = 50)
+    private String tipoServicio = "MESA";
+
+    @Column(precision = 4, scale = 2)
+    private BigDecimal propinaPorcentaje = BigDecimal.ZERO;
+
+    private boolean propinaIncluida = false;
+
+    @Column(length = 20)
+    private String inventarioValoracion = "PROMEDIO_PONDERADO";
+
+    private boolean controlarVencimientos = false;
+
+    private boolean controlarLotes = false;
 }

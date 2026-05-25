@@ -6,14 +6,23 @@ export type ModuleId =
   | "dashboard"
   | "mesas"
   | "menu"
+  | "productos"
+  | "recetas"
   | "pedidos"
   | "cocina"
   | "pagos"
+  | "caja"
   | "inventario"
   | "compras"
+  | "proveedores"
+  | "clientes"
+  | "personal"
+  | "contabilidad"
   | "incidencias"
   | "reportes"
   | "configuracion";
+
+export type ModuleGroup = "general" | "salon" | "cocina" | "inventario" | "caja" | "clientes" | "contabilidad" | "sistema";
 
 export type ModuleMeta = {
   id: ModuleId;
@@ -25,6 +34,7 @@ export type ModuleMeta = {
   summary: string;
   roles: Role[];
   icon: LucideIcon;
+  group: ModuleGroup;
 };
 
 export type AppModule = ModuleMeta & {

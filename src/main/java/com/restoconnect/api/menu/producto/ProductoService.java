@@ -39,6 +39,12 @@ public class ProductoService {
         producto.setPrecio(MoneyUtils.scale(request.precio()));
         producto.setCategoria(categoria);
         producto.setImagenUrl(request.imagenUrl());
+        producto.setCodigoInterno(request.codigoInterno());
+        producto.setCosto(request.costo() != null ? MoneyUtils.scale(request.costo()) : BigDecimal.ZERO);
+        producto.setEsVenta(request.esVenta());
+        producto.setEsInsumo(request.esInsumo());
+        producto.setImpuestoAplicable(request.impuestoAplicable() != null ? request.impuestoAplicable() : BigDecimal.ZERO);
+        producto.setUnidadMedida(request.unidadMedida() != null ? request.unidadMedida() : "UNIDAD");
         producto = productoRepository.save(producto);
 
         for (RecetaItemRequest recetaRequest : request.receta()) {
@@ -72,6 +78,12 @@ public class ProductoService {
         producto.setCategoria(categoria);
         producto.setImagenUrl(request.imagenUrl());
         producto.setActivo(request.activo());
+        producto.setCodigoInterno(request.codigoInterno());
+        producto.setCosto(request.costo() != null ? MoneyUtils.scale(request.costo()) : BigDecimal.ZERO);
+        producto.setEsVenta(request.esVenta());
+        producto.setEsInsumo(request.esInsumo());
+        producto.setImpuestoAplicable(request.impuestoAplicable() != null ? request.impuestoAplicable() : BigDecimal.ZERO);
+        producto.setUnidadMedida(request.unidadMedida() != null ? request.unidadMedida() : "UNIDAD");
         productoRepository.save(producto);
         productoDisponibilidadService.recalcularDisponibilidadProducto(producto);
         return map(productoRepository.findById(producto.getId()).orElseThrow());
@@ -105,8 +117,15 @@ public class ProductoService {
                 producto.isActivo(),
                 producto.isDisponible(),
                 producto.getImagenUrl(),
+                producto.getCodigoInterno(),
+                producto.getCosto(),
+                producto.isEsVenta(),
+                producto.isEsInsumo(),
+                producto.getImpuestoAplicable(),
+                producto.getUnidadMedida(),
                 recetaProductoRepository.findByProductoId(producto.getId()).stream()
                         .map(receta -> new RecetaResponse(
+                                receta.getId(),
                                 receta.getItemInventario().getId(),
                                 receta.getItemInventario().getNombre(),
                                 receta.getCantidadNecesaria(),
@@ -122,6 +141,12 @@ public class ProductoService {
             @NotNull(message = "El precio es obligatorio.") @DecimalMin(value = "0.0", inclusive = false) BigDecimal precio,
             @NotNull(message = "La categoria es obligatoria.") UUID categoriaId,
             String imagenUrl,
+            String codigoInterno,
+            BigDecimal costo,
+            boolean esVenta,
+            boolean esInsumo,
+            BigDecimal impuestoAplicable,
+            String unidadMedida,
             @NotEmpty(message = "La receta debe tener al menos un insumo.") List<@Valid RecetaItemRequest> receta
     ) {
     }

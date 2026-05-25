@@ -1,8 +1,9 @@
-import { PencilLine, Power, Search, SlidersHorizontal } from "lucide-react";
-import { useEffect, useMemo, useState } from "react";
+import { ImagePlus, PencilLine, Power, Search, SlidersHorizontal, Trash2 } from "lucide-react";
+import { useEffect, useMemo, useState, type ChangeEvent } from "react";
 import { api, ApiError, withDemoFallback } from "../../../core/http/httpClient";
 import { mapCategories, mapProducts } from "../../../core/http/mappers";
 import { Badge, InlineFeedback, ModulePanel, PageHeader, SafeImage } from "../../../shared/ui/primitives";
+import { fileToOptimizedDataUrl, IMAGE_UPLOAD_HELPER_TEXT } from "../../../shared/media/imageUpload";
 import { demoCategorias, demoProductos } from "../../../data/demo";
 import type { Categoria, Producto } from "../../../types";
 
@@ -24,6 +25,7 @@ export function MenuPage() {
   const [editing, setEditing] = useState(emptyForm);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   async function loadCatalog() {
@@ -119,6 +121,26 @@ export function MenuPage() {
     }
   }
 
+  async function handleImageSelected(event: ChangeEvent<HTMLInputElement>) {
+    const file = event.target.files?.[0];
+    if (!file) return;
+    setUploadingImage(true);
+    setError(null);
+    try {
+      const imageDataUrl = await fileToOptimizedDataUrl(file);
+      setEditing((current) => ({ ...current, imagenUrl: imageDataUrl }));
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "No se pudo cargar la imagen.");
+    } finally {
+      setUploadingImage(false);
+      event.target.value = "";
+    }
+  }
+
+  function clearImage() {
+    setEditing((current) => ({ ...current, imagenUrl: "" }));
+  }
+
   async function toggleActive(product: Producto) {
     setSaving(true);
     setError(null);
@@ -209,15 +231,26 @@ export function MenuPage() {
                 {categories.map((item) => <option key={item.id} value={item.id}>{item.nombre}</option>)}
               </select>
             </label>
-            <label>
-              <span className="mb-1 block text-sm font-bold">URL de imagen</span>
-              <input className="input" value={editing.imagenUrl} onChange={(event) => setEditing((current) => ({ ...current, imagenUrl: event.target.value }))} />
-            </label>
+            <div className="space-y-3">
+              <span className="block text-sm font-bold">Imagen del producto</span>
+              <div className="overflow-hidden rounded-3xl border border-dashed border-stone-300 bg-stone-50">
+                <SafeImage className="h-44 w-full object-cover" src={editing.imagenUrl} alt={editing.nombre || "Vista previa del producto"} fallback="/images/restaurant-hero.png" />
+              </div>
+              <label className="flex cursor-pointer items-center justify-center gap-2 rounded-2xl border border-stone-300 bg-white px-4 py-3 text-sm font-semibold text-ink transition hover:border-herb hover:text-herb">
+                <ImagePlus size={18} />
+                {uploadingImage ? "Procesando imagen..." : "Subir imagen"}
+                <input className="hidden" type="file" accept="image/png,image/jpeg,image/webp,image/svg+xml" onChange={handleImageSelected} />
+              </label>
+              <div className="flex items-center justify-between gap-3 rounded-2xl bg-stone-50 px-4 py-3 text-xs text-stone-500">
+                <span>{IMAGE_UPLOAD_HELPER_TEXT}</span>
+                {editing.imagenUrl ? <button className="inline-flex items-center gap-1 font-semibold text-tomato" type="button" onClick={clearImage}><Trash2 size={14} /> Quitar</button> : null}
+              </div>
+            </div>
             <label className="flex items-center gap-3 rounded-2xl border border-stone-200 px-4 py-3">
               <input type="checkbox" checked={editing.activo} onChange={(event) => setEditing((current) => ({ ...current, activo: event.target.checked }))} />
               <span className="text-sm font-bold">Producto activo</span>
             </label>
-            <button className="btn-primary w-full rounded-2xl" disabled={!editing.id || saving} onClick={saveProduct}>Guardar cambios</button>
+            <button className="btn-primary w-full rounded-2xl" disabled={!editing.id || saving || uploadingImage} onClick={saveProduct}>Guardar cambios</button>
           </div>
         </aside>
       </div>

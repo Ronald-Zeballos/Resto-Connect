@@ -13,11 +13,10 @@ public class PrediccionInventarioScheduler {
     private final ConfigurarParametrosInventarioUseCase configurarParametrosInventarioUseCase;
     private final GenerarPrediccionReposicionUseCase generarPrediccionReposicionUseCase;
 
-    @Scheduled(cron = "0 0 * * * *")
+    @Scheduled(cron = "0 0 6 * * *")
     public void ejecutarProgramada() {
         var parametros = configurarParametrosInventarioUseCase.obtenerActual();
-        LocalTime ahora = LocalTime.now().withMinute(0).withSecond(0).withNano(0);
-        if (parametros.isActivarPrediccionAutomatica() && parametros.getHoraEjecucionPrediccionDiaria().equals(ahora)) {
+        if (parametros.isActivarPrediccionAutomatica()) {
             generarPrediccionReposicionUseCase.ejecutarTodas();
         }
     }

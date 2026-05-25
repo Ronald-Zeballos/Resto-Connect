@@ -1,11 +1,13 @@
 package com.restoconnect.api.inventario.item;
 
 import com.restoconnect.api.compras.proveedor.Proveedor;
+import com.restoconnect.api.inventario.categoria.CategoriaInventario;
 import com.restoconnect.api.shared.domain.BaseEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -49,11 +51,18 @@ public class ItemInventario extends BaseEntity {
     @JoinColumn(name = "proveedor_preferido_id")
     private Proveedor proveedorPreferido;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "categoria_id")
+    private CategoriaInventario categoria;
+
     @Column(nullable = false)
     private Integer tiempoEntregaProveedorDias;
 
     @Column(nullable = false)
     private boolean activo = true;
+
+    @Column(precision = 12, scale = 2)
+    private BigDecimal costoPromedioPonderado;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

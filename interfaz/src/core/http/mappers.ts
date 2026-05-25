@@ -4,6 +4,7 @@ import { resolveProductImage } from "../../data/demo";
 
 export function mapProduct(item: Record<string, unknown>, index: number): Producto {
   const categoria = asString(item.categoriaNombre || item.categoria, "General");
+  const recetaArray = Array.isArray(item.receta) ? item.receta as Array<Record<string, unknown>> : [];
   return {
     id: asString(item.id, `producto-${index}`),
     nombre: asString(item.nombre, `Producto ${index + 1}`),
@@ -13,7 +14,20 @@ export function mapProduct(item: Record<string, unknown>, index: number): Produc
     categoria,
     activo: Boolean(item.activo ?? true),
     disponible: Boolean(item.disponible ?? true),
-    imagenUrl: resolveProductImage(asString(item.nombre, `Producto ${index + 1}`), categoria, asString(item.imagenUrl))
+    imagenUrl: resolveProductImage(asString(item.nombre, `Producto ${index + 1}`), categoria, asString(item.imagenUrl)),
+    codigoInterno: asString(item.codigoInterno),
+    costo: Number(item.costo ?? 0),
+    esVenta: Boolean(item.esVenta ?? true),
+    esInsumo: Boolean(item.esInsumo ?? false),
+    impuestoAplicable: Number(item.impuestoAplicable ?? 0),
+    unidadMedida: asString(item.unidadMedida, "UNIDAD"),
+    receta: recetaArray.map((r) => ({
+      id: asString(r.id) || undefined,
+      itemInventarioId: asString(r.itemInventarioId),
+      itemInventarioNombre: asString(r.itemInventarioNombre),
+      cantidadNecesaria: Number(r.cantidadNecesaria ?? 0),
+      unidadMedida: asString(r.unidadMedida)
+    }))
   };
 }
 
@@ -56,8 +70,11 @@ export function mapPedido(item: Record<string, unknown>, index: number): Pedido 
     total: Number(item.total ?? 0),
     minutos: Number(item.minutos ?? 0),
     items: toRecordArray(item.detalles || item.items).map((detalle, detalleIndex) => ({
+      productId: asString(detalle.productoId || detalle.id) || undefined,
       producto: asString(detalle.producto || detalle.productoNombre, `Producto ${detalleIndex + 1}`),
-      cantidad: Number(detalle.cantidad ?? 0)
+      cantidad: Number(detalle.cantidad ?? 0),
+      precioUnitario: Number(detalle.precioUnitario ?? 0) || undefined,
+      subtotal: Number(detalle.subtotal ?? 0) || undefined
     }))
   };
 }
@@ -73,11 +90,14 @@ export function mapInventoryItem(item: Record<string, unknown>, index: number): 
     stockMaximo: Number(item.stockMaximo ?? 1),
     puntoReorden: Number(item.puntoReorden ?? 0),
     costoUnitario: Number(item.costoUnitario ?? 0),
+    costoPromedioPonderado: Number(item.costoPromedioPonderado ?? 0) || undefined,
     clasificacionAbc: asString(item.clasificacionAbc, "MEDIA") as InventarioItem["clasificacionAbc"],
     proveedorPreferidoId: asString(item.proveedorPreferidoId),
     tiempoEntregaProveedorDias: Number(item.tiempoEntregaProveedorDias ?? 1),
     activo: Boolean(item.activo ?? true),
-    estadoStock: asString(item.estadoStock, "DISPONIBLE")
+    estadoStock: asString(item.estadoStock, "DISPONIBLE"),
+    categoriaId: asString(item.categoriaId) || undefined,
+    categoriaNombre: asString(item.categoriaNombre) || undefined,
   };
 }
 

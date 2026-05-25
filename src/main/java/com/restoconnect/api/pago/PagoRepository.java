@@ -20,4 +20,7 @@ public interface PagoRepository extends JpaRepository<Pago, UUID> {
     );
 
     Optional<Pago> findTopByPedidoIdOrderByFechaCreacionDesc(UUID pedidoId);
+
+    @EntityGraph(attributePaths = {"pedido", "pedido.mesa"})
+    List<Pago> findByFechaPagoBetween(OffsetDateTime desde, OffsetDateTime hasta);
 }

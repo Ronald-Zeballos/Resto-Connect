@@ -23,6 +23,7 @@ public record PedidoResponse(
                 pedido.getMeseroValidador() != null ? pedido.getMeseroValidador().getNombre() : null,
                 pedido.getDetalles().stream()
                         .map(detalle -> new DetalleResponse(
+                                detalle.getProducto().getId(),
                                 detalle.getProducto().getNombre(),
                                 detalle.getCantidad(),
                                 detalle.getPrecioUnitario(),
@@ -32,6 +33,7 @@ public record PedidoResponse(
     }
 
     public record DetalleResponse(
+            UUID productoId,
             String producto,
             Integer cantidad,
             BigDecimal precioUnitario,
@@ -39,4 +41,3 @@ public record PedidoResponse(
     ) {
     }
 }
-

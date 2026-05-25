@@ -8,7 +8,9 @@ public record CrearProveedorRequest(
         @NotBlank(message = "El NIT es obligatorio.") String nit,
         @NotBlank(message = "El telefono es obligatorio.") String telefono,
         @NotBlank(message = "El email es obligatorio.") @Email(message = "El email no es valido.") String email,
-        @NotBlank(message = "La direccion es obligatoria.") String direccion
+        @NotBlank(message = "La direccion es obligatoria.") String direccion,
+        String personaContacto,
+        String paginaWeb
 ) {
 }
 

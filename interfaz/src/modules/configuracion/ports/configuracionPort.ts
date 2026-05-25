@@ -7,7 +7,7 @@ export type ConfigField = {
   key: string;
   label: string;
   value: string;
-  group?: "general" | "pagosQr" | "cuentaQr" | "iaGrok";
+  group?: "general" | "pagosQr" | "cuentaQr";
   type?: "text" | "email" | "number" | "password" | "select" | "toggle";
   helperText?: string;
   options?: ConfigFieldOption[];

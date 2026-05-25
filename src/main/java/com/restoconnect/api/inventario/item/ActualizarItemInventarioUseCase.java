@@ -1,6 +1,7 @@
 package com.restoconnect.api.inventario.item;
 
 import com.restoconnect.api.compras.proveedor.ProveedorRepository;
+import com.restoconnect.api.inventario.categoria.CategoriaInventarioRepository;
 import com.restoconnect.api.shared.exception.BusinessException;
 import com.restoconnect.api.shared.exception.NotFoundException;
 import java.math.BigDecimal;
@@ -15,6 +16,7 @@ public class ActualizarItemInventarioUseCase {
 
     private final ItemInventarioRepository itemInventarioRepository;
     private final ProveedorRepository proveedorRepository;
+    private final CategoriaInventarioRepository categoriaInventarioRepository;
 
     @Transactional
     public ItemInventarioResponse ejecutar(UUID id, ActualizarItemInventarioRequest request) {
@@ -34,6 +36,9 @@ public class ActualizarItemInventarioUseCase {
         item.setProveedorPreferido(request.proveedorPreferidoId() == null ? null :
                 proveedorRepository.findById(request.proveedorPreferidoId())
                         .orElseThrow(() -> new NotFoundException("Proveedor no encontrado.")));
+        item.setCategoria(request.categoriaId() == null ? null :
+                categoriaInventarioRepository.findById(request.categoriaId())
+                        .orElseThrow(() -> new NotFoundException("Categoria no encontrada.")));
         return ItemInventarioResponse.from(itemInventarioRepository.save(item));
     }
 

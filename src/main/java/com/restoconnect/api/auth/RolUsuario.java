@@ -2,8 +2,12 @@ package com.restoconnect.api.auth;
 
 public enum RolUsuario {
     ADMIN,
-    MESERO,
+    GERENTE,
+    CAJERO,
     COCINA,
+    INVENTARIO,
+    CONTADOR,
+    MESERO,
     CLIENTE_QR
 }
 

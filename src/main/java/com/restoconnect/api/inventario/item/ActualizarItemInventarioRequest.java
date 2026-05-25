@@ -17,7 +17,8 @@ public record ActualizarItemInventarioRequest(
         UUID proveedorPreferidoId,
         @NotNull(message = "El tiempo de entrega es obligatorio.") Integer tiempoEntregaProveedorDias,
         ClasificacionAbc clasificacionAbc,
-        boolean activo
+        boolean activo,
+        UUID categoriaId
 ) {
 }
 

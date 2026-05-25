@@ -132,6 +132,10 @@ export const api = {
   mesaPorQr: (codigoQr: string) => apiFetch<Record<string, unknown>>(`/api/mesas/qr/${encodeURIComponent(codigoQr)}`),
   productos: () => apiFetch<unknown[]>("/api/menu/productos"),
   categorias: () => apiFetch<unknown[]>("/api/menu/categorias"),
+  crearProducto: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/menu/productos", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
   actualizarProducto: (id: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/menu/productos/${id}`, {
     method: "PATCH",
     body: JSON.stringify(payload)
@@ -152,6 +156,9 @@ export const api = {
   cambiarEstadoPedido: (pedidoId: string, estado: string) => apiFetch<Record<string, unknown>>(`/api/pedidos/${pedidoId}/estado`, {
     method: "PATCH",
     body: JSON.stringify({ estado })
+  }),
+  cancelarPedido: (pedidoId: string) => apiFetch<Record<string, unknown>>(`/api/pedidos/${pedidoId}/cancelar`, {
+    method: "PATCH"
   }),
   pagarPasarela: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/pagos/pasarela/simular", {
     method: "POST",
@@ -221,7 +228,128 @@ export const api = {
   consumoVsPrediccion: (params?: Record<string, string | number | undefined | null>) => apiFetch<unknown[]>(`/api/reportes/inventario/consumo-vs-prediccion${toQueryString(params)}`),
   authClienteQr: (codigoQr: string) => apiFetch<{ token?: string; rol?: string; nombre?: string }>(`/api/auth/cliente-qr/${encodeURIComponent(codigoQr)}`, {
     method: "POST"
-  })
+  }),
+
+  // -- CATEGORIAS INVENTARIO --
+  categoriasInventario: () => apiFetch<unknown[]>("/api/inventario/categorias"),
+  crearCategoriaInventario: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/inventario/categorias", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+
+  // -- LOTES --
+  lotesPorItem: (itemId: string) => apiFetch<unknown[]>(`/api/inventario/lotes/item/${encodeURIComponent(itemId)}`),
+  registrarLote: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/inventario/lotes", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+
+  // -- CONTEO FISICO --
+  conteosFisicos: () => apiFetch<unknown[]>("/api/inventario/conteos"),
+  iniciarConteo: () => apiFetch<Record<string, unknown>>("/api/inventario/conteos", { method: "POST" }),
+  registrarConteoDetalle: (conteoId: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/inventario/conteos/${conteoId}/detalle`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  cerrarConteo: (conteoId: string) => apiFetch<Record<string, unknown>>(`/api/inventario/conteos/${conteoId}/cerrar`, { method: "POST" }),
+
+  // -- CAJA / CIERRE --
+  cierresCaja: () => apiFetch<unknown[]>("/api/caja/cierres"),
+  cierreAbierto: () => apiFetch<unknown>("/api/caja/cierres/abierto"),
+  abrirCaja: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/caja/cierres/abrir", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  cerrarCaja: (cierreId: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/caja/cierres/${cierreId}/cerrar`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  registrarGasto: (cierreId: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/caja/cierres/${cierreId}/gastos`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+
+  // -- CLIENTES --
+  clientes: () => apiFetch<unknown[]>("/api/clientes"),
+  crearCliente: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/clientes", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  actualizarCliente: (id: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/clientes/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  }),
+  desactivarCliente: (id: string) => apiFetch<void>(`/api/clientes/${id}`, { method: "DELETE" }),
+
+  // -- PERSONAL --
+  personal: () => apiFetch<unknown[]>("/api/personal"),
+  crearPersonal: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/personal", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  actualizarPersonal: (id: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/personal/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  }),
+  desactivarPersonal: (id: string) => apiFetch<void>(`/api/personal/${id}`, { method: "DELETE" }),
+
+  // -- PROVEEDORES (mejorado) --
+  proveedores: () => apiFetch<unknown[]>("/api/compras/proveedores"),
+  crearProveedor: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/compras/proveedores", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  actualizarProveedor: (id: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/compras/proveedores/${id}`, {
+    method: "PUT",
+    body: JSON.stringify(payload)
+  }),
+  desactivarProveedor: (id: string) => apiFetch<void>(`/api/compras/proveedores/${id}`, { method: "DELETE" }),
+
+  // -- CONTABILIDAD --
+  cuentasPagar: () => apiFetch<unknown[]>("/api/contabilidad/cuentas-pagar"),
+  crearCuentaPagar: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/contabilidad/cuentas-pagar", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  registrarPagoCuenta: (id: string, payload: Record<string, unknown>) => apiFetch<string>(`/api/contabilidad/cuentas-pagar/${id}/pagos`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  cuentasCobrar: () => apiFetch<unknown[]>("/api/contabilidad/cuentas-cobrar"),
+  crearCuentaCobrar: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/contabilidad/cuentas-cobrar", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  registrarCobroCuenta: (id: string, payload: Record<string, unknown>) => apiFetch<string>(`/api/contabilidad/cuentas-cobrar/${id}/cobros`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  gastosContables: () => apiFetch<unknown[]>("/api/contabilidad/gastos"),
+  crearGastoContable: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/contabilidad/gastos", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  ingresosContables: () => apiFetch<unknown[]>("/api/contabilidad/ingresos"),
+  crearIngresoContable: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/contabilidad/ingresos", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  estadoResultados: (params?: Record<string, string | number | undefined | null>) => apiFetch<Record<string, unknown>>(`/api/contabilidad/reportes/estado-resultados${toQueryString(params)}`),
+
+  // -- RECETAS --
+  recetasPorProducto: (productoId: string) => apiFetch<unknown[]>(`/api/menu/productos/${productoId}/receta`),
+  agregarReceta: (productoId: string, payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>(`/api/menu/productos/${productoId}/receta`, {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
+  eliminarReceta: (productoId: string, recetaId: string) => apiFetch<void>(`/api/menu/productos/${productoId}/receta/${recetaId}`, { method: "DELETE" }),
+
+  // -- ALMACENES --
+  almacenes: () => apiFetch<unknown[]>("/api/almacenes"),
+  crearAlmacen: (payload: Record<string, unknown>) => apiFetch<Record<string, unknown>>("/api/almacenes", {
+    method: "POST",
+    body: JSON.stringify(payload)
+  }),
 };
 
 export function connectNotifications(onMessage: (message: string) => void) {

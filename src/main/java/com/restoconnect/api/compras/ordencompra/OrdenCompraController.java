@@ -1,7 +1,9 @@
 package com.restoconnect.api.compras.ordencompra;
 
 import jakarta.validation.Valid;
+import java.time.LocalDate;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -25,13 +27,13 @@ public class OrdenCompraController {
     private final RecibirOrdenCompraUseCase recibirOrdenCompraUseCase;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GERENTE') or hasRole('INVENTARIO')")
     public ResponseEntity<OrdenCompraResponse> crear(@Valid @RequestBody CrearOrdenCompraUseCase.CrearOrdenCompraRequest request) {
         return ResponseEntity.ok(crearOrdenCompraUseCase.ejecutar(request));
     }
 
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN') or hasRole('MESERO')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GERENTE') or hasRole('INVENTARIO') or hasRole('CAJERO')")
     public ResponseEntity<List<OrdenCompraResponse>> listar() {
         return ResponseEntity.ok(ordenCompraRepository.findAllByOrderByFechaCreacionDesc().stream()
                 .map(OrdenCompraResponse::from)
@@ -39,14 +41,24 @@ public class OrdenCompraController {
     }
 
     @PatchMapping("/{id}/aprobar")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GERENTE')")
     public ResponseEntity<OrdenCompraResponse> aprobar(@PathVariable UUID id) {
         return ResponseEntity.ok(aprobarOrdenCompraUseCase.ejecutar(id));
     }
 
     @PatchMapping("/{id}/recibir")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GERENTE') or hasRole('INVENTARIO')")
     public ResponseEntity<OrdenCompraResponse> recibir(@PathVariable UUID id) {
         return ResponseEntity.ok(recibirOrdenCompraUseCase.ejecutar(id));
+    }
+
+    @PatchMapping("/{id}/pago")
+    @PreAuthorize("hasRole('ADMIN') or hasRole('GERENTE') or hasRole('CONTADOR')")
+    public ResponseEntity<OrdenCompraResponse> registrarPago(@PathVariable UUID id, @RequestBody Map<String, String> body) {
+        OrdenCompra oc = ordenCompraRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Orden no encontrada."));
+        oc.setEstadoPago("PAGADO");
+        oc.setFechaPago(body.containsKey("fechaPago") ? LocalDate.parse(body.get("fechaPago")) : LocalDate.now());
+        return ResponseEntity.ok(OrdenCompraResponse.from(ordenCompraRepository.save(oc)));
     }
 }

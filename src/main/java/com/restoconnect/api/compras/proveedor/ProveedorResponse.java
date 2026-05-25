@@ -9,7 +9,9 @@ public record ProveedorResponse(
         String telefono,
         String email,
         String direccion,
-        boolean activo
+        boolean activo,
+        String personaContacto,
+        String paginaWeb
 ) {
     public static ProveedorResponse from(Proveedor proveedor) {
         return new ProveedorResponse(
@@ -19,7 +21,9 @@ public record ProveedorResponse(
                 proveedor.getTelefono(),
                 proveedor.getEmail(),
                 proveedor.getDireccion(),
-                proveedor.isActivo()
+                proveedor.isActivo(),
+                proveedor.getPersonaContacto(),
+                proveedor.getPaginaWeb()
         );
     }
 }
